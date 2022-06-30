@@ -1,0 +1,18 @@
+{
+    "pages": [
+        "pages/collect/collect",
+        "pages/index/index"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fff",
+        "navigationBarTitleText": "Weixin",
+        "navigationBarTextStyle": "black",
+        "navigationStyle": "custom"
+    },
+    "style": "v2",
+    "sitemapLocation": "sitemap.json",
+    "useExtendedLib": {
+        "weui": true
+    }
+}

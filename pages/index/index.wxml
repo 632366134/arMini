@@ -1,0 +1,46 @@
+<!--index.wxml-->
+<view class="container">
+    <view class="header">
+        <image src="/images/index/service.png" class="service"></image>
+        <view class="searchInput">
+            <view class="searchDeafult">
+                <image src="/images/index/search.png" hidden="{{isHidden}}"></image>
+                <input disabled type="text" placeholder="搜索" />
+            </view>
+            <image src="/images/index/box2.png"></image>
+        </view>
+        <image src="/images/index/history.png" class="history"></image>
+    </view>
+    <view class="welcome">Welcome to ARworld ! </view>
+    <scroll-view enhanced="true" bounces="true" enable-flex="{{true}}" class="scroll-view" scroll-x="{{true}}">
+        <view class="scroll-item" wx:for="{{list}}" wx:key="id">
+            <image src="{{item.bookCover}}" class="scrollImage"></image>
+            <text>{{item.projectName}}</text>
+        </view>
+    </scroll-view>
+    <view class="collect" bindtap="goColllect">
+        <image src="/images/index/logobg.png"></image>
+        <view class="addCollect">
+            <image src="/images/index/add.png"></image>
+            <text>添加默认AR画册</text>
+        </view>
+    </view>
+    <view class="compList">
+        <view class="compListTop">
+            企业榜单
+        </view>
+        <view class="compListMain">
+            <view class="mainLeft">
+                <image src="{{compList[0].bookCover}}"></image>
+                <text>{{compList[0].projectName}}</text>
+            </view>
+            <view class="mainRight">
+                <view wx:for="{{[1,2]}}" wx:key="id" class="mainRight2">
+                    <image src="{{compList[item].bookCover}}"></image>
+                    <text>{{compList[item].projectName}}</text>
+                </view>
+            </view>
+
+        </view>
+    </view>
+</view>

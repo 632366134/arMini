@@ -1,0 +1,16 @@
+<!--pages/collect/collect.wxml-->
+<view class="container">
+<view class="msg_box">
+    <view class="msg">找不到你想要的？前往搜索</view>
+    <image src="/images/collect/back.png"></image>
+</view>
+<view class="collect_list">
+<view class="collect_box {{listIndex===item.id ? 'url' : ''}}" data-index="{{item.id}}" wx:for="{{compList}}" wx:key="id" bindtap="seclect">
+<view class="border">
+    <image src="{{item.bookCover}}"></image>
+<view class="desc">{{item.projectIntroduce}}</view>
+</view>
+</view>
+</view>
+<view class="collectBtn">设为默认</view>
+</view>
