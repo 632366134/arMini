@@ -1,7 +1,11 @@
 {
     "pages": [
+
+        "pages/index/index",
         "pages/collect/collect",
-        "pages/index/index"
+        "pages/searchList/searchList",
+        "pages/collectSearch/collectSearch"
+
     ],
     "window": {
         "backgroundTextStyle": "light",

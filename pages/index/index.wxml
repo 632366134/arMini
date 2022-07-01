@@ -21,8 +21,8 @@
     <view class="collect" bindtap="goColllect">
         <image src="/images/index/logobg.png"></image>
         <view class="addCollect">
-            <image src="/images/index/add.png"></image>
-            <text>添加默认AR画册</text>
+            <image class="{{isCollect? 'collectImage': 'imagebox'}}" src="{{collectUrl}}"></image>
+            <text>{{collect.projectName}}</text>
         </view>
     </view>
     <view class="compList">

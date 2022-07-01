@@ -1,0 +1,19 @@
+<view class="container">
+    <navigate-back url="collect"></navigate-back>
+    <view class="searchRow">
+        <view class="search">
+            <image src="/images/index/search.png"></image>
+            <input bindinput="bindKeyInput" maxlength="30" placeholder="请输入企业名称或宣传册名称" type="text" />
+        </view>
+        <view bindtap="goSearch" class="searchBtn">搜索</view>
+    </view>
+    <view class="history">
+        <view class="historytop">历史搜索</view>
+        <view class="historyGroup">
+        <view data-value="{{item}}" bindtap="goSearch2" class="box" wx:for="{{compList}}" wx:key="id">
+            {{item}}
+        </view>
+        </view>
+    </view>
+    <image class="noSearch" src="/images/search/noSerach.png"></image>
+</view>

@@ -1,0 +1,8 @@
+/* componments/navigateBack/navigateBack.wxss */
+.back {
+  position: absolute;
+  top: 63rpx;
+  left: 30rpx;
+  width: 24rpx;
+  height: 42rpx;
+}

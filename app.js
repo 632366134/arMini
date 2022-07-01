@@ -10,7 +10,7 @@ App({
         "customerCode": ""
     }
     let list = await API.selProjects(data)
-    wx.setStorageSync('list',list)
+    wx.setStorageSync('list',list.list)
     console.log(list)
   },
 
