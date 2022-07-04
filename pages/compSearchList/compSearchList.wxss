@@ -5,7 +5,6 @@
 }
 .container .collectList {
   margin-top: 132rpx;
-  margin-bottom: 100rpx;
 }
 .container .collectList .url {
   background-size: 726rpx 206rpx;

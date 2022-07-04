@@ -6,7 +6,14 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    url: "",
+    url: {
+        type:String,
+        default:''
+    },
+    title3:{
+        type:String,
+        default:''
+    }
   },
 
   /**

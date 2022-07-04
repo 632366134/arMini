@@ -1,5 +1,5 @@
 <view class="collect_list">
-    <view class="collect_box {{listIndex===item.id ? 'url' : ''}}" data-index="{{item.id}}" wx:for="{{list}}" wx:key="id" bindtap="select_box">
+    <view class="collect_box {{listIndex===item.id ? 'url' : ''}}" data-item="{{item}}" wx:for="{{list}}" wx:key="id" bindtap="select_box">
         <view class="border">
             <image src="{{item.bookCover}}"></image>
             <view class="desc">{{item.projectIntroduce}}</view>

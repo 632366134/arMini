@@ -1,0 +1,5 @@
+<view class="container {{isMask === true ? 'mask-blur':''}}">
+    <navigate-back url="compSearch"></navigate-back>
+    <collect-list class="collectList" bindmyevent="select" list="{{list}}"></collect-list>
+</view>
+<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask" wx:if="{{isMask}}"></confirm-mask>

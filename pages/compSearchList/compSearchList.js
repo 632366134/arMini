@@ -10,29 +10,29 @@ Page({
   data: {
     list: [],
     projectDetail: {},
+    isMask:false,
+    borchureDetail:{}
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   async onLoad({ param }) {
-
     this.data.list = JSON.parse(param).list;
     this.setData({ list:this.data.list });
   },
-  select(e) {
+  select({detail}) {
     this.setData({
-        projectDetail: e.detail,
-    });
+        isMask: true,
+        borchureDetail: detail,
+      });
+   
   },
-  goCollect() {
-    if (!this.data.projectDetail) {
-      publicFn.Toast("请选择宣传册", "error");
-      return;
-    }
-    wx.setStorageSync("collect", this.data.projectDetail);
-    publicFn.Toast("收藏成功！", "success");
-    navigateBack("index");
+  changeMask() {
+    this.setData({
+      isMask: false,
+    });
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

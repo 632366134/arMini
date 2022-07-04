@@ -1,38 +1,38 @@
-// pages/searchList/searchList.js
-const { API } = require("../../utils/request.js");
-import { navigateBack } from "../../utils/navigate";
+// pages/history/history.js
 const publicFn = require("../../utils/public");
-
 Page({
   /**
    * 页面的初始数据
    */
   data: {
     list: [],
-    projectDetail: {},
+    title:'历史记录',
+    isMask:false,
+    borchureDetail:{}
+    
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  async onLoad({ param }) {
-
-    this.data.list = JSON.parse(param).list;
-    this.setData({ list:this.data.list });
-  },
-  select(e) {
+  onLoad(options) {
+    publicFn.LoadingOff();
+    let list = wx.getStorageSync("list");
     this.setData({
-        projectDetail: e.detail,
+      list,
     });
   },
-  goCollect() {
-    if (!this.data.projectDetail) {
-      publicFn.Toast("请选择宣传册", "error");
-      return;
-    }
-    wx.setStorageSync("collect", this.data.projectDetail);
-    publicFn.Toast("收藏成功！", "success");
-    navigateBack("index");
+  gopriview({ currentTarget }) {
+      console.log(currentTarget)
+    this.setData({
+      isMask: true,
+      borchureDetail: currentTarget.dataset.item,
+    });
+  },
+  changeMask() {
+    this.setData({
+      isMask: false,
+    });
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -42,9 +42,7 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow() {
-    publicFn.LoadingOff();
-  },
+  onShow() {},
 
   /**
    * 生命周期函数--监听页面隐藏

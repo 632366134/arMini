@@ -1,5 +1,4 @@
 // index.js
-// 获取应用实例
 import { goTo } from "../../utils/navigate";
 const publicFn = require("../../utils/public");
 
@@ -10,6 +9,8 @@ Page({
     collectUrl: "/images/index/add.png",
     isCollect: false,
     collect: [],
+    isMask: false,
+    borchureDetail: {},
   },
   onLoad() {},
   goColllect() {
@@ -27,7 +28,26 @@ Page({
       compList,
       collect,
       collectUrl: collect?.bookCover || "/images/index/add.png",
-      isCollect: true,
+      isCollect: collect ? true : false,
     });
+  },
+  goHistroy() {
+    publicFn.Loading();
+    goTo("history");
+  },
+  gopriview({ currentTarget }) {
+    this.setData({
+      isMask: true,
+      borchureDetail: currentTarget.dataset.item,
+    });
+  },
+  changeMask() {
+    this.setData({
+      isMask: false,
+    });
+  },
+  goSearch(){
+    publicFn.Loading();
+    goTo("compSearch");
   },
 });

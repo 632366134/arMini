@@ -1,1 +1,4 @@
+<view class="navigateback">
+    <text>{{title3}}</text>
+</view>
 <image bindtap="back" class="back" src="/images/backBtn.png"></image>

@@ -24,11 +24,11 @@ Component({
     methods: {
 
         select_box(e) {
-            console.log(e.currentTarget.dataset.index)
+            console.log(e.currentTarget.dataset.item)
             this.setData({
-              listIndex:e.currentTarget.dataset.index
+              listIndex:e.currentTarget.dataset.item.id
             });
-            this.triggerEvent('myevent',e.currentTarget.dataset.index)
+            this.triggerEvent('myevent',e.currentTarget.dataset.item)
           },
     }
 })

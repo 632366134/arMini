@@ -1,0 +1,8 @@
+{
+    "usingComponents": {
+        "navigate-back":"/componments/navigateBack/navigateBack",
+        "collect-list":"/componments/collectList/collectList",
+        "collect-btn":"/componments/collectBtn/collectBtn",
+        "confirm-mask":"/componments/confirm-mask/confirm-mask"
+    }
+}

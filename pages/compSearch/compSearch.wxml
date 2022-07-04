@@ -1,4 +1,4 @@
 <view class="container">
-    <navigate-back url="collect"></navigate-back>
+    <navigate-back url="index"></navigate-back>
     <search-row-history class="search-row-history" bindmyKeyinput="bindKeyInput" bindmyevent1="goSearch" bindmyevent2="goSearch2" compList="{{compList}}"></search-row-history>
 </view>

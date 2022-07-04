@@ -26,7 +26,7 @@ Page({
 
   },
   select(e) {
-    let listIndex = e.detail;
+    let listIndex = e.detail.id;
     this.setData({
       listIndex,
     });

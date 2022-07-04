@@ -4,11 +4,5 @@
         "navigate-back":"/componments/navigateBack/navigateBack",
         "collect-btn":"/componments/collectBtn/collectBtn"
 
-    },
-    "window": {
-        "backgroundTextStyle": "light",
-        "navigationBarBackgroundColor": "#fff",
-        "navigationBarTitleText": "Weixin",
-        "navigationBarTextStyle": "black"
-      }
+    }
 }

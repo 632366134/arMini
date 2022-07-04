@@ -1,10 +1,13 @@
 {
     "pages": [
-
         "pages/index/index",
         "pages/collect/collect",
         "pages/searchList/searchList",
-        "pages/collectSearch/collectSearch"
+        "pages/collectSearch/collectSearch",
+        "pages/history/history",
+        "pages/compSearch/compSearch",
+        "pages/compSearchList/compSearchList"
+
 
     ],
     "window": {
