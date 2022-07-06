@@ -64,3 +64,11 @@
   font-weight: 500;
   color: #4e4e4f;
 }
+.confirmMask .slam {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
