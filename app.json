@@ -6,9 +6,8 @@
         "pages/collectSearch/collectSearch",
         "pages/history/history",
         "pages/compSearch/compSearch",
-        "pages/compSearchList/compSearchList"
-
-
+        "pages/compSearchList/compSearchList",
+        "pages/mycomp/mycomp"
     ],
     "window": {
         "backgroundTextStyle": "light",
@@ -18,8 +17,5 @@
         "navigationStyle": "custom"
     },
     "style": "v2",
-    "sitemapLocation": "sitemap.json",
-    "useExtendedLib": {
-        "weui": true
-    }
+    "sitemapLocation": "sitemap.json"
 }

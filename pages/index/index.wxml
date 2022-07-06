@@ -1,7 +1,7 @@
 <!--index.wxml-->
 <view class="container  {{isMask === true ? 'mask-blur':''}}">
     <view class="header">
-        <image src="/images/index/service.png" class="service"></image>
+        <image src="/images/index/service.png" class="service" bindtap="goService"></image>
         <view class="searchInput" >
             <view class="searchDeafult" bindtap="goSearch">
                 <image class="image" src="/images/index/search.png" ></image>
@@ -40,12 +40,12 @@
             企业榜单
         </view>
         <view class="compListMain">
-            <view class="mainLeft" bindtap="gopriview">
+            <view class="mainLeft" bindtap="gopriview" data-item="{{compList[0]}}">
                 <image src="{{compList[0].bookCover}}"></image>
                 <text>{{compList[0].projectName}}</text>
             </view>
             <view class="mainRight">
-                <view wx:for="{{[1,2]}}" wx:key="id" class="mainRight2" bindtap="gopriview">
+                <view wx:for="{{[1,2]}}" wx:key="id" class="mainRight2" data-item="{{compList[item]}}" bindtap="gopriview">
                     <image src="{{compList[item].bookCover}}"></image>
                     <text>{{compList[item].projectName}}</text>
                 </view>

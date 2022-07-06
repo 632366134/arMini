@@ -50,4 +50,8 @@ Page({
     publicFn.Loading();
     goTo("compSearch");
   },
+  goService(){
+    publicFn.Loading();
+    goTo("mycomp");
+  }
 });

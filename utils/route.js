@@ -6,5 +6,7 @@ export default {
     'history':'/pages/history/history', // 历史
     'compSearch':'/pages/compSearch/compSearch', // 历史
     'compSearchList':'/pages/compSearchList/compSearchList', // 历史
+    'mycomp':'/pages/mycomp/mycomp', // 历史
+
   }
   

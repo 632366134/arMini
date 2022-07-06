@@ -1,14 +1,15 @@
 <view class="container {{isMask === true ? 'mask-blur':''}}">
     <navigate-back title3="{{title}}" url="index"></navigate-back>
-    <swiper 	 next-margin="60rpx" previous-margin="60rpx" class="swiper">
-        <block wx:for="{{list}}" wx:key="id">
-            <swiper-item>
+    <swiper current="{{currentBannerIndex}}" bindchange="handleChangeBanner" next-margin="60rpx" previous-margin="60rpx" class="swiper">
+            <swiper-item wx:for="{{list}}" wx:key="id" >
+            <view class="swiper-item-view" animation="{{currentBannerIndex == index ? animationSelected : animationNoSelected}}">
+                <text class="addtime">{{item.addTime}}</text>
                 <view class="swiper-item" bindtap="gopriview" data-item="{{item}}">
                     <image src="{{item.bookCover}}" class="scrollImage"></image>
                     <text>{{item.projectIntroduce}}</text>
                 </view>
+            </view>
             </swiper-item>
-        </block>
     </swiper>
 </view>
-<confirm-mask borchureDetail="{{borchureDetail}}"  bindchangeMask="changeMask" wx:if="{{isMask}}"></confirm-mask>
+<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask" wx:if="{{isMask}}"></confirm-mask>

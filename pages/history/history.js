@@ -6,10 +6,12 @@ Page({
    */
   data: {
     list: [],
-    title:'历史记录',
-    isMask:false,
-    borchureDetail:{}
-    
+    title: "历史记录",
+    isMask: false,
+    borchureDetail: {},
+    animationSelected: {},
+    animationNoSelected: {},
+    currentBannerIndex:0
   },
 
   /**
@@ -22,8 +24,41 @@ Page({
       list,
     });
   },
+
+  handleChangeBanner(e) {
+    this.setData({
+      currentBannerIndex: e.detail.current,
+    });
+    console.log(this.data.currentBannerIndex)
+    this.enlarge();
+    this.shrink();
+  },
+  enlarge() {
+    console.log('enlarge')
+
+    let animationSelected = wx.createAnimation({
+      duration: 500,
+      timingFunction: "ease",
+    });
+    animationSelected.scale(1, 1).step();
+    this.setData({
+      animationSelected: animationSelected.export(),
+    });
+  },
+  shrink() {
+      console.log('shrink')
+    let animationNoSelected = wx.createAnimation({
+        duration: 500,
+      timingFunction: "ease",
+    });
+    animationNoSelected.scale(0.95,0.95).step();
+    this.setData({
+      animationNoSelected: animationNoSelected.export(),
+    });
+  },
+
   gopriview({ currentTarget }) {
-      console.log(currentTarget)
+    console.log(currentTarget);
     this.setData({
       isMask: true,
       borchureDetail: currentTarget.dataset.item,
@@ -42,7 +77,10 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow() {},
+  onShow() {
+        this.enlarge();
+        this.shrink();
+  },
 
   /**
    * 生命周期函数--监听页面隐藏
