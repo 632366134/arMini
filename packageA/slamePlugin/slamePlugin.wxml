@@ -1,2 +1,5 @@
-<!--packageA/slamePlugin/slamePlugin.wxml-->
-<text>packageA/slamePlugin/slamePlugin.wxml</text>
+<kivicube-slam 
+  class="slam" 
+  bind:ready="ready" 
+  bind:error="error"
+/>
