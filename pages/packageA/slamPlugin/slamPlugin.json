@@ -1,5 +1,0 @@
-{
-    "usingComponents": {
-        "kivicube-slam": "plugin://kivicube-slam/kivicube-slam"
-    }
-}
