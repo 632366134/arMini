@@ -28,7 +28,7 @@ Component({
         },
         confirmAr(){
             // wx.navigateTo({ url: 'plugin://kivicube-slam/scene?id=3c1b406e1c634503a99c6dac8063745d' })
-            wx.navigateTo({ url: '/packageA/slamePlugin/slamePlugin' })
+            wx.navigateTo({ url: '/packageA/canvasAr/canvasAr' })
         }
     }
 })

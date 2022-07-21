@@ -1,0 +1,10 @@
+<view class="container">
+    <navigate-back title3="{{title}}" url="index"></navigate-back>
+    <view class="main">
+        <canvas class="canvas" canvas-id="myCanvas"></canvas>
+        <camera frame-size="high" device-position="back" flash="auto"></camera>
+        <view class="scaneBox">
+            <image class="scanePic" src="/static/images/scane.gif" mode></image>
+        </view>
+    </view>
+</view>

@@ -1,5 +1,0 @@
-<kivicube-slam 
-  class="slam" 
-  bind:ready="ready" 
-  bind:error="error"
-/>

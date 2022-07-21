@@ -7,11 +7,13 @@
   position: absolute;
   top: 63rpx;
   left: 0;
+  z-index: 99999;
 }
 .back {
   position: absolute;
-  top: 63rpx;
+  top: 62rpx;
   width: 24rpx;
   height: 42rpx;
   left: 20rpx;
+  z-index: 99999;
 }
