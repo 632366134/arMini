@@ -31,8 +31,8 @@
 .container .main {
   position: relative;
   width: 100%;
-  margin-top: 104rpx;
-  height: calc(100% - 104rpx);
+  margin-top: 132rpx;
+  height: calc(100% - 132rpx);
 }
 .container .main camera {
   width: 100%;

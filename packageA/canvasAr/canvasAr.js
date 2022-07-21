@@ -1,14 +1,17 @@
 // packageA/canvasAr/canvasAr.js
-import { loading,throttle } from '../../utils/decorator'
+import {
+    loading,
+    throttle
+} from '../../utils/decorator'
 import $axios from '../../request/request'
-const t = throttle(1000)
+const t = throttle(100)
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
-        title:'识别',
+        title: '识别',
         load: false,
         time: 3000, // 未监听到摄像头初始化成功 自动执行
         cameraLoad: false,
@@ -27,7 +30,10 @@ Page({
         chooseInfo: {},
         finish: false,
         finishTimer: null,
-        finishTime: 60
+        finishTime: 60,
+        isShowScan: false,
+        canvasWidth: "",
+        canvasHeight: ""
     },
 
     /**
@@ -35,25 +41,30 @@ Page({
      */
     onLoad(options) {
         this.handleCamera().then(() => {
-            this.finishTimer = setInterval(() => {
-                this.finishTime--
-                if (this.finishTime < 0) {
-                    this.handleFinish()
-                }
-            }, 1000)
-            console.log('camera ok')
-            // this.load = true
-            setTimeout(() => {
-                if (!this.cameraLoad) {
-                    console.log('load')
-                    this.takePhoto()
-                }
-            }, this.time)
-        })
-        .catch(() => {
-            wx.navigateBack({
-                delta: 1
+                this.finishTimer = setInterval(() => {
+                    this.finishTime--
+                    if (this.finishTime < 0) {
+                        this.handleFinish()
+                    }
+                }, 1000)
+                console.log('camera ok')
+                // this.load = true
+                setTimeout(() => {
+                    if (!this.cameraLoad) {
+                        console.log('load')
+                        this.takePhoto()
+                    }
+                }, this.time)
             })
+            .catch(() => {
+                wx.navigateBack({
+                    delta: 1
+                })
+            })
+    },
+    bindinitdone() {
+        this.setData({
+            isShowScan: true
         })
     },
     handleCamera() {
@@ -64,8 +75,7 @@ Page({
                         resolve()
                     } else {
                         wx.authorize({
-                            scope:
-                                'scope.camera',
+                            scope: 'scope.camera',
                             success: () => {
                                 resolve()
                             },
@@ -138,6 +148,10 @@ Page({
                         if (res.data) {
                             if (!this.fetching) {
                                 console.log(res.width, 'width')
+                                this.setData({
+                                    canvasWidth: res.width,
+                                    canvasHeight: res.height
+                                })
                                 try {
                                     let base64 =
                                         await this.changeDataToBase64(res)
@@ -175,8 +189,7 @@ Page({
                     data: clamped,
                     success() {
                         console.log('绘制成功')
-                        wx.canvasToTempFilePath(
-                            {
+                        wx.canvasToTempFilePath({
                                 x: 0,
                                 y: 0,
                                 width: frame.width,
@@ -230,14 +243,14 @@ Page({
         // })
         setTimeout(() => {
             $axios({
-                url: 'bd/imageSearch',
-                ip: 'https://www.arsnowslide.com/arOpenWeb/',
-                noCode: true,
-                isShowToast: false,
-                data: {
-                    queryContent: 'data:image/png;base64,' + base64
-                }
-            })
+                    url: 'bd/imageSearch',
+                    ip: 'https://www.arsnowslide.com/arOpenWeb/',
+                    noCode: true,
+                    isShowToast: false,
+                    data: {
+                        queryContent: 'data:image/png;base64,' + base64
+                    }
+                })
                 .then((res) => {
                     this.handleRes(res)
                 })
@@ -345,7 +358,12 @@ Page({
      * 生命周期函数--监听页面卸载
      */
     onUnload() {
-
+        console.log('onUnload')
+        this.setData({
+            isShowScan: false,
+            canvasWidth: 0,
+            canvasHeight: 0
+        })
     },
 
     /**
