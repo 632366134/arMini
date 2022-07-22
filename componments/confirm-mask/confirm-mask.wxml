@@ -1,4 +1,4 @@
-<view class="confirmMask">
+<view class="confirmMask" catchtouchmove="move">
     <view class="exit" bindtap="exit">关闭</view>
     <image class="arlogo" src="/images/confirm-mask/arlogo.png"></image>
     <view class="text1">确认进入宣传册</view>

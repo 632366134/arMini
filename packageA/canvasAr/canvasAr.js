@@ -11,7 +11,7 @@ Page({
      * 页面的初始数据
      */
     data: {
-        title: '识别',
+        // title: '识别',
         load: false,
         time: 3000, // 未监听到摄像头初始化成功 自动执行
         cameraLoad: false,
@@ -32,8 +32,8 @@ Page({
         finishTimer: null,
         finishTime: 60,
         isShowScan: false,
-        canvasWidth: "",
-        canvasHeight: ""
+        canvasWidth: "200",
+        canvasHeight: "200"
     },
 
     /**

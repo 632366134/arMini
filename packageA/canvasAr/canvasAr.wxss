@@ -2,8 +2,6 @@
   position: fixed;
   left: 200vw;
   top: 200vh;
-  width: 100vw;
-  height: 100vh;
   background: red;
 }
 .container {
@@ -31,8 +29,7 @@
 .container .main {
   position: relative;
   width: 100%;
-  margin-top: 132rpx;
-  height: calc(100% - 132rpx);
+  height: 100vh;
 }
 .container .main camera {
   width: 100%;

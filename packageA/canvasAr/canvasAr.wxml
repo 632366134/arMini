@@ -1,13 +1,12 @@
 <view class="container">
-    <navigate-back title3="{{title}}" url="index"></navigate-back>
     <view class="main">
         <block wx:if="{{isShowScan}}">
 
             <canvas style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;" class="canvas" canvas-id="myCanvas"></canvas>
         </block>
         <camera bindinitdone="bindinitdone" frame-size="high" device-position="back" flash="auto"></camera>
-        <view class="scaneBox">
+        <!-- <view class="scaneBox">
             <image class="scanePic" src="/static/images/scane.gif" mode></image>
-        </view>
+        </view> -->
     </view>
 </view>
