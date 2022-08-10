@@ -19,10 +19,7 @@ Page({
    */
   onLoad(options) {
     publicFn.LoadingOff();
-    let list = wx.getStorageSync("list");
-    this.setData({
-      list,
-    });
+
   },
 
   handleChangeBanner(e) {
@@ -78,6 +75,11 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    let list = wx.getStorageSync('historyList')
+    console.log(list)
+    this.setData({
+      list,
+    });
         this.enlarge();
         this.shrink();
   },

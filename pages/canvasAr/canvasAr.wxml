@@ -1,0 +1,24 @@
+<view class="container">
+    <view class="main">
+        <view class="container page" data-weui-theme="{{theme}}">
+            <canvas class="webgl" type="webgl" id="webgl" style="width: {{width}}px; height: {{height}}px">
+            </canvas>
+            <!-- <view class="btn-cnt">
+        <button type="primary" class="btn-choose" bindtap="chooseMedia">选择图片</button>
+    </view> -->
+    <view wx:if="{{isShowScan}}" class="back" bindtap="back">返回</view>
+
+        </view>
+        <view class="container2">
+            <image class="logo" src="/images/confirm-mask/arlogo.png"></image>
+            <view class="boxShadow"></view>
+            <view class="progressPercent">正在加载素材中...</view>
+            <progress  active-mode="forwards" activeColor="#b2b2b2" duration="{{percentLine}}" class="progress" active="true" percent="{{100}}"></progress>
+            <view class="longText">AR宣传册让宣传刊加添了一个全新的角度</view>
+        </view>
+        <!-- <view class="scaneBox">
+            <image class="scanePic" src="/static/images/scane.gif" mode></image>
+        </view> -->
+    </view>
+
+</view>

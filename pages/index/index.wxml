@@ -54,4 +54,4 @@
         </view>
     </view>
 </view>
-<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask" wx:if="{{isMask}}"></confirm-mask>
+<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask"  isShow="{{isMask}}"></confirm-mask>

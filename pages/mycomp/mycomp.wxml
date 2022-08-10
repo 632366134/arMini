@@ -2,10 +2,12 @@
     <navigate-back url="index"></navigate-back>
     <view class="main">
         <text>工作时间</text>
-        <text>Mon-Fri 9:00am-17:30pm</text>
+        <text bindtouchmove="touchmove">Mon-Fri 9:00am-17:30pm</text>
         <text>联系方式</text>
         <text>电话：(0510)-85168115</text>
         <text>邮箱：contact@intooar.cn</text>
         <text>地址：江苏省无锡市滨湖区建筑西路777号A3栋5层</text>
     </view>
 </view>
+<view><canvas class="webgl" type="webgl" id="webgl" style="width: {{width}}px; height: {{height}}px" bindtouchend="onTouchEnd">
+    </canvas></view>

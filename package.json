@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jpeg-js": "^0.4.4",
+    "threejs-miniprogram": "^0.0.8"
+  }
+}

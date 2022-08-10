@@ -1,29 +1,23 @@
 {
-    "pages": [
-        "pages/index/index",
-        "pages/collect/collect",
-        "pages/searchList/searchList",
-        "pages/collectSearch/collectSearch",
-        "pages/history/history",
-        "pages/compSearch/compSearch",
-        "pages/compSearchList/compSearchList",
-        "pages/mycomp/mycomp"
-    ],
-    "subpackages": [
-        {
-            "root": "packageA",
-            "pages": [
-                "canvasAr/canvasAr"
-            ]
-        }
-    ],
-    "window": {
-        "backgroundTextStyle": "light",
-        "navigationBarBackgroundColor": "#fff",
-        "navigationBarTitleText": "Weixin",
-        "navigationBarTextStyle": "black",
-        "navigationStyle": "custom"
-    },
-    "style": "v2",
-    "sitemapLocation": "sitemap.json"
+  "pages": [
+    "pages/index/index",
+    "pages/collect/collect",
+    "pages/searchList/searchList",
+    "pages/collectSearch/collectSearch",
+    "pages/history/history",
+    "pages/compSearch/compSearch",
+    "pages/compSearchList/compSearchList",
+    "pages/mycomp/mycomp",
+    "pages/canvasAr/canvasAr"
+  ],
+
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
 }

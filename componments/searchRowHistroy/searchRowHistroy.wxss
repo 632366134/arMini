@@ -74,7 +74,8 @@
 }
 .noSearch {
   position: fixed;
-  bottom: 190rpx;
+  left: 143rpx;
+  bottom: 250rpx;
   width: 464rpx;
   height: 420rpx;
 }

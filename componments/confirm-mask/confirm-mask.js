@@ -11,6 +11,10 @@ Component({
       type: Object,
       default: {},
     },
+    isShow: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   /**
@@ -21,15 +25,38 @@ Component({
   /**
    * 组件的方法列表
    */
+
   methods: {
+    enter: function () {
+      let list = wx.getStorageSync("historyList") || [];
+      console.log(this.properties.borchureDetail, list);
+      list.unshift(this.properties.borchureDetail);
+      list.length = list.length >= 5 ? 5 : list.length;
+      wx.setStorageSync("historyList", list);
+      console.log(this.properties.borchureDetail);
+    },
     exit() {
       this.triggerEvent("changeMask");
+    },
+    move() {
+      console.log("1");
     },
     confirmAr() {
       publicFn.Loading();
       this.handleCamera()
         .then((res) => {
-          wx.navigateTo({ url: "/packageA/canvasAr/canvasAr" });
+          wx.downloadFile({
+            url: "https:" + this.properties.borchureDetail.bookCover,
+            success: (res) => {
+              console.log(res);
+              let imgUrl = res.tempFilePath;
+              wx.setStorageSync("imgUrl", imgUrl);
+              wx.setStorageSync("customerCode",this.properties.borchureDetail.customerCode);
+              goTo("canvasAr", {
+                projectCode: this.properties.borchureDetail.projectCode,
+              });
+            },
+          });
         })
         .catch((err) => {
           reject(err);
