@@ -1,8 +1,8 @@
 // pages/mycomp/mycomp.js
-const publicFn = require("../../utils/public");
-import { goTo } from "../../utils/navigate";
+const publicFn = require("../../../utils/public");
+import { goTo } from "../../../utils/navigate";
 import getBehavior from "./behavior";
-import yuvBehavior from "../canvasAr/yuvBehavior";
+import yuvBehavior from "../../../pages/canvasAr/yuvBehavior";
 const NEAR = 0.001
 const FAR = 1000
 

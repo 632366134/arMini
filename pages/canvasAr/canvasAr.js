@@ -1,5 +1,5 @@
 // packageA/canvasAr/canvasAr.js
-import { loading, throttle } from "../../utils/decorator";
+import { throttle } from "../../utils/decorator";
 const t = throttle(500);
 import getBehavior from "../../pages/canvasAr/behavior";
 import yuvBehavior from "../../pages/canvasAr/yuvBehavior";
@@ -14,7 +14,7 @@ Component({
     isShowScan: false,
     theme: "light",
     imgUrl: "",
-    percentLine:10
+    percentLine: 10,
   },
   lifetimes: {
     /**
@@ -27,9 +27,9 @@ Component({
       }
     },
     ready() {
-       this.projectCode = JSON.parse(this.options.param).projectCode
+      this.projectCode = JSON.parse(this.options.param).projectCode;
       let imgUrl = wx.getStorageSync("imgUrl");
-      
+
       console.log(imgUrl);
       console.log("页面准备完全");
 
@@ -91,13 +91,16 @@ Component({
       if (camera) {
         this.camera.matrixAutoUpdate = false;
         this.camera.matrixWorldInverse.fromArray(camera.viewMatrix);
-        this.camera.matrixWorld.getInverse(this.camera.matrixWorldInverse);
-
+        // this.camera.matrixWorld.getInverse(this.camera.matrixWorldInverse);
+        this.camera.matrixWorld.copy(this.camera.matrixWorldInverse).invert();
         const projectionMatrix = camera.getProjectionMatrix(NEAR, FAR);
         this.camera.projectionMatrix.fromArray(projectionMatrix);
-        this.camera.projectionMatrixInverse.getInverse(
-          this.camera.projectionMatrix
-        );
+        // this.camera.projectionMatrixInverse.getInverse(
+        //   this.camera.projectionMatrix
+        // );
+        this.camera.projectionMatrixInverse
+          .copy(this.camera.projectionMatrix)
+          .invert();
       }
 
       // 更新动画

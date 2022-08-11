@@ -1,8 +1,13 @@
-import { createScopedThreejs } from "threejs-miniprogram";
-import { registerGLTFLoader } from "../../loaders/gltf-loader";
+import * as THREE from "three-platformize";
+import { GLTFLoader } from "three-platformize/examples/jsm/loaders/GLTFLoader";
+import { WechatPlatform } from "three-platformize/src/WechatPlatform";
+
+const { API } = require("../../utils/request");
 import cloneGltf from "../../loaders/gltf-clone";
+const publicFn = require("../../utils/public");
 
 const info = wx.getSystemInfoSync();
+let DEBUG_SIZE = false; // 目前支持不完善
 
 export default function getBehavior() {
   return Behavior({
@@ -12,17 +17,16 @@ export default function getBehavior() {
       fps: 0,
       memory: 0,
       cpu: 0,
-      list: [],
     },
     methods: {
-      onReady2() {
-        console.log('onReady2');
+      onReady() {
+        console.log("ready");
         wx.createSelectorQuery()
           .select("#webgl")
           .node()
           .exec((res) => {
             this.canvas = res[0].node;
-
+            publicFn.LoadingOff();
             const info = wx.getSystemInfoSync();
             const pixelRatio = info.pixelRatio;
             const calcSize = (width, height) => {
@@ -34,28 +38,10 @@ export default function getBehavior() {
                 height,
               });
             };
-            calcSize(info.windowWidth, info.windowHeight );
-
+            calcSize(info.windowWidth, info.windowHeight);
             this.initVK();
           });
       },
-      touchmove(e) {
-        let list = this.data.list;
-        list.push(e.timeStamp);
-        console.log(list);
-        if (list.length === 10) {
-          let sub = list[9] - list[0];
-          this.data.list = [];
-          console.log(sub);
-          if (sub > 4000) {
-            return;
-          }
-          this.onReady2();
-        }
-
-        console.log(e);
-      },
-
       onUnload() {
         if (this._texture) {
           this._texture.dispose();
@@ -68,6 +54,9 @@ export default function getBehavior() {
         if (this.scene) {
           this.scene.dispose();
           this.scene = null;
+        }
+        if (THREE.PLATFORM) {
+          THREE.PLATFORM.dispose();
         }
         if (this.camera) this.camera = null;
         if (this.model) this.model = null;
@@ -98,29 +87,33 @@ export default function getBehavior() {
         if (this.session) this.session = null;
         if (this.anchor2DList) this.anchor2DList = [];
       },
+
       initVK() {
         // 初始化 threejs
         this.initTHREE();
         const THREE = this.THREE;
-
         // 自定义初始化
         if (this.init) this.init();
 
         console.log("this.gl", this.gl);
+
         const isSupportV2 = wx.isVKSupport("v2");
         const session = (this.session = wx.createVKSession({
           track: {
             plane: {
               mode: 3,
             },
+            marker: true,
           },
           version: isSupportV2 ? "v2" : "v1",
           gl: this.gl,
         }));
+
         session.start((err) => {
           if (err) return console.error("VK error: ", err);
 
           console.log("@@@@@@@@ VKSession.version", session.version);
+          this.addMarker();
 
           const canvas = this.canvas;
 
@@ -133,28 +126,114 @@ export default function getBehavior() {
               height,
             });
           };
-
           session.on("resize", () => {
             const info = wx.getSystemInfoSync();
             calcSize(
               info.windowWidth,
               info.windowHeight * 0.8,
+              //   info.windowHeight,
               info.pixelRatio
             );
           });
 
-          const loader = new THREE.GLTFLoader();
-          loader.load(
-            "https://dldir1.qq.com/weixin/miniprogram/RobotExpressive_aa2603d917384b68bb4a086f32dabe83.glb",
-            (gltf) => {
-              this.model = {
-                scene: gltf.scene,
-                animations: gltf.animations,
-              };
-            }
-          );
-
+          //   const loader = new THREE.GLTFLoader();
+          //   loader.load(
+          //     "https://dldir1.qq.com/weixin/miniprogram/RobotExpressive_aa2603d917384b68bb4a086f32dabe83.glb",
+          //     (gltf) => {
+          //       this.model = {
+          //         scene: gltf.scene,
+          //         animations: gltf.animations,
+          //       };
+          //     },
+          //     (progress) => {
+          //       console.log(progress);
+          //     }
+          //   );
+          //   this.loading(THREE).then((res) => {
           this.clock = new THREE.Clock();
+
+          const createPlane = (size) => {
+            const geometry = new THREE.PlaneGeometry(size.width, size.height);
+            const material = new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              side: THREE.DoubleSide,
+              transparent: true,
+              opacity: 0.5,
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.rotateX(Math.PI / 2);
+            const cnt = new THREE.Object3D();
+            cnt.add(mesh);
+            return cnt;
+          };
+          const updateMatrix = (object, m) => {
+            object.matrixAutoUpdate = false;
+            object.matrix.fromArray(m);
+          };
+          session.on("addAnchors", (anchors) => {
+            anchors.forEach((anchor) => {
+              const size = anchor.size;
+              let object;
+              if (size && DEBUG_SIZE) {
+                object = createPlane(size);
+              } else {
+                if (!this.model) {
+                  console.warn("this.model 还没加载完成 ！！！！！");
+                  return;
+                }
+
+                object = new THREE.Object3D();
+                const model = this.getRobot();
+                model.rotateX(-Math.PI / 2);
+                object.add(model);
+              }
+
+              object._id = anchor.id;
+              object._size = size;
+              updateMatrix(object, anchor.transform);
+              this.planeBox.add(object);
+            });
+          });
+          session.on("updateAnchors", (anchors) => {
+            const map = anchors.reduce((temp, item) => {
+              temp[item.id] = item;
+              return temp;
+            }, {});
+            this.planeBox.children.forEach((object) => {
+              if (object._id && map[object._id]) {
+                const anchor = map[object._id];
+                const size = anchor.size;
+                if (
+                  size &&
+                  DEBUG_SIZE &&
+                  object._size &&
+                  (size.width !== object._size.width ||
+                    size.height !== object._size.height)
+                ) {
+                  this.planeBox.remove(object);
+                  object = createPlane(size);
+                  this.planeBox.add(object);
+                }
+
+                object._id = anchor.id;
+                object._size = size;
+                updateMatrix(object, anchor.transform);
+              }
+            });
+          });
+          session.on("removeAnchors", (anchors) => {
+            const map = anchors.reduce((temp, item) => {
+              temp[item.id] = item;
+              return temp;
+            }, {});
+            this.planeBox.children.forEach((object) => {
+              if (object._id && map[object._id]) this.planeBox.remove(object);
+            });
+          });
+
+          // 平面集合
+          const planeBox = (this.planeBox = new THREE.Object3D());
+          this.scene.add(planeBox);
 
           // 逐帧渲染
           const onFrame = (timestamp) => {
@@ -167,12 +246,18 @@ export default function getBehavior() {
             session.requestAnimationFrame(onFrame);
           };
           session.requestAnimationFrame(onFrame);
+          //   });
         });
       },
-      initTHREE() {
-        const THREE = (this.THREE = createScopedThreejs(this.canvas));
-        registerGLTFLoader(THREE);
+      async initTHREE() {
+        // const THREE = (this.THREE = createScopedThreejs(this.canvas));
+        const platform = new WechatPlatform(this.canvas);
+        this.platform = platform;
+        platform.enableDeviceOrientation("game");
+        THREE.PLATFORM.set(platform);
+        this.THREE = THREE;
 
+        // registerGLTFLoader(THREE);
         // 相机
         this.camera = new THREE.Camera();
 
@@ -188,18 +273,25 @@ export default function getBehavior() {
         scene.add(light2);
 
         // 渲染层
-        const renderer = (this.renderer = new THREE.WebGLRenderer({
+
+        const renderer = (this.renderer = new THREE.WebGL1Renderer({
           antialias: true,
           alpha: true,
+          canvas: this.canvas,
         }));
-        renderer.gammaOutput = true;
+        // renderer.gammaOutput = true;
         renderer.gammaFactor = 2.2;
+        // await this.loading(THREE);
+        this.loading(THREE);
       },
-
+      updateAnimation() {
+        const dt = this.clock.getDelta();
+        if (this.mixers) this.mixers.forEach((mixer) => mixer.update(dt));
+      },
       copyRobot() {
         const THREE = this.THREE;
         const { scene, animations } = cloneGltf(this.model, THREE);
-        scene.scale.set(0.05, 0.05, 0.05);
+        scene.scale.set(0.3, 0.3, 0.3);
 
         // 动画混合器
         const mixer = new THREE.AnimationMixer(scene);
@@ -265,6 +357,34 @@ export default function getBehavior() {
             }
           }
         }
+      },
+      loading(THREE) {
+        // return new Promise((resolve, reject) => {
+        console.log(this.projectCode);
+        //   API.selMediaApps({ "projectCode": this.projectCode }).then((res) => {
+        //     console.log(res);
+        //   });
+        const loader = new GLTFLoader();
+
+        let that = this;
+        loader.load(
+          "https://dldir1.qq.com/weixin/miniprogram/RobotExpressive_aa2603d917384b68bb4a086f32dabe83.glb",
+          function (gltf) {
+            console.log("gltfload");
+            that.model = {
+              scene: gltf.scene,
+              animations: gltf.animations,
+            };
+          },
+          function (xhr) {
+            console.log("gltfloadingnoww");
+
+            console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+          },
+          function (err) {
+            console.log("err!");
+          }
+        );
       },
     },
   });
