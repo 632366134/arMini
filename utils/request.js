@@ -26,15 +26,10 @@ function request(method, url, data) {
 const code = wx.getStorageSync("customerCode");
 const API = {
   selProjects: (data) =>
-    request("POST", "wxMiniAppWeb/resource/selProjects", data),
+    request("POST", "resource/selProjects", data),
   selMediaApps: (data) =>
-    request("POST", "wxMiniAppWeb/resource/selMediaApps", data),
-  showResource: (data) =>
-    request(
-      "POST",
-      `wxMiniAppWeb/resource/showResource?comSessCode=${code}`,
-      data
-    ),
+    request("POST", "resource/selMediaApps", data)
+
 };
 module.exports = {
   API,

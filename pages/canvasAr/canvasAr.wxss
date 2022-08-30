@@ -2,6 +2,14 @@
   position: fixed;
   left: 0;
   top: 0;
+  z-index: 97;
+  pointer-events: none;
+}
+.webgl2 {
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  top: 0;
   z-index: 98;
 }
 .cameraBox {
@@ -103,7 +111,7 @@
 .container .back {
   text-align: center;
   line-height: 60rpx;
-  position: fixed;
+  position: absolute;
   bottom: 40rpx;
   width: 160rpx;
   height: 60rpx;

@@ -1,7 +1,7 @@
 import { createScopedThreejs } from "threejs-miniprogram";
 import { registerGLTFLoader } from "../../../loaders/gltf-loader";
 import cloneGltf from "../../../loaders/gltf-clone";
-
+import {goTo} from '../../../utils/navigate'
 const info = wx.getSystemInfoSync();
 
 export default function getBehavior() {
@@ -51,6 +51,22 @@ export default function getBehavior() {
             return;
           }
           this.onReady2();
+        }
+
+        console.log(e);
+      },
+      touchmove2(e) {
+        if (this.sub) return;
+        let list = this.data.list;
+        list.push(e.timeStamp);
+        console.log(list);
+        if (list.length === 10) {
+          this.sub = list[9] - list[0];
+          this.data.list = [];
+          if (this.sub > 4000) {
+            return;
+          }
+          goTo('hdr')
         }
 
         console.log(e);

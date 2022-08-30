@@ -19,7 +19,7 @@ export default [
     output: {
       format: 'cjs',
       dir: 'pages/',
-      chunkFileNames: 'chunks/[name]1.js',
+      chunkFileNames: 'chunks/[name].js',
       entryFileNames: 'canvasAr/[name].js',
       manualChunks: {
         'three-platformize': ['three-platformize']

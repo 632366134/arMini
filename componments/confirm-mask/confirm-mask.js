@@ -46,7 +46,8 @@ Component({
       this.handleCamera()
         .then((res) => {
           wx.downloadFile({
-            url: "https:" + this.properties.borchureDetail.bookCover,
+            // url: "https:" + this.properties.borchureDetail.bookCover,
+            url:"https://wallpaper-static.cheetahfun.com/wallpaper/sites/hits/pic2.png",
             success: (res) => {
               console.log(res);
               let imgUrl = res.tempFilePath;

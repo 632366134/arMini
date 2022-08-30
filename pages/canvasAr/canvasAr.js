@@ -3,13 +3,15 @@ import { throttle } from "../../utils/decorator";
 const t = throttle(500);
 import getBehavior from "../../pages/canvasAr/behavior";
 import yuvBehavior from "../../pages/canvasAr/yuvBehavior";
+// import getWebgl from "../../pages/canvasAr/webgl";
+
 
 const NEAR = 0.001;
 const FAR = 1000;
 // const jpeg = require("jpeg-js");
 
 Component({
-  behaviors: [getBehavior(), yuvBehavior],
+  behaviors: [getBehavior(),yuvBehavior],
   data: {
     isShowScan: false,
     theme: "light",
@@ -27,22 +29,32 @@ Component({
       }
     },
     ready() {
-      this.projectCode = JSON.parse(this.options.param).projectCode;
-      let imgUrl = wx.getStorageSync("imgUrl");
-
-      console.log(imgUrl);
-      console.log("页面准备完全");
-
-      this.setData({
-        theme: wx.getSystemInfoSync().theme || "light",
-        imgUrl,
-      });
-
-      if (wx.onThemeChange) {
-        wx.onThemeChange(({ theme }) => {
-          this.setData({ theme });
-        });
-      }
+        wx.downloadFile({
+            // url: "https:" + this.properties.borchureDetail.bookCover,
+            url:"https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/obs.jpg",
+            success: (res) => {
+              console.log(res);
+              let imgUrl = res.tempFilePath;
+            //   wx.setStorageSync("imgUrl", imgUrl);
+            //   this.projectCode = JSON.parse(this.options.param).projectCode;
+            //    imgUrl = wx.getStorageSync("imgUrl");
+        
+              console.log(imgUrl);
+              console.log("页面准备完全");
+        
+              this.setData({
+                theme: wx.getSystemInfoSync().theme || "light",
+                imgUrl,
+              });
+        
+              if (wx.onThemeChange) {
+                wx.onThemeChange(({ theme }) => {
+                  this.setData({ theme });
+                });
+              }
+            },
+          });
+    
     },
   },
   methods: {
@@ -55,36 +67,8 @@ Component({
       this.initGL();
     },
 
-    chooseMedia() {
-      wx.chooseMedia({
-        count: 1,
-        mediaType: ["image"],
-        success: (res) => {
-          console.log("chooseMedia res", res);
-          const imgUrl = res.tempFiles[0].tempFilePath;
-          wx.getImageInfo({
-            src: imgUrl,
-            success: (res) => {
-              const { width, height } = res;
-              console.log("getImageInfo res", res);
-              this.setData({
-                imgUrl: imgUrl,
-              });
-              this.addMarker();
-            },
-            fail: (res) => {
-              console.error(res);
-            },
-          });
-        },
-        fail: (res) => {
-          console.error(res);
-        },
-      });
-    },
     render(frame) {
       this.renderGL(frame);
-
       const camera = frame.camera;
 
       // 相机
@@ -150,6 +134,7 @@ Component({
         this.setData({
           filePathNow: filePath,
           isShowScan: true,
+
         });
       };
 
