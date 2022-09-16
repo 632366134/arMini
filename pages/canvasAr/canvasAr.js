@@ -8,6 +8,7 @@ const { API } = require("../../utils/request");
 
 const NEAR = 0.001;
 const FAR = 1000;
+let i =1
 // const jpeg = require("jpeg-js");
 
 Component({
@@ -17,7 +18,7 @@ Component({
     theme: "light",
     imgUrl: "",
     percentLine: 50,
-    projectCode: "",
+    projectCode: ""
   },
   lifetimes: {
     /**
@@ -33,69 +34,74 @@ Component({
         let projectCode = wx.getStorageSync("projectCode");
         let data = { projectCode };
         let mediaList = await API.selMediaApps(data);
-      //   console.log(mediaList, "mediaList");
-      //   let obsUrl, mediaUrl;
-      //     obsUrl = await API.selBasePicList(data);
-      // obsUrl = wx.getStorageSync("imgUrl");
-      //   mediaList.mediaList.forEach((value, index) => {
-      //     switch (value.mediaType) {
-      //   case 1:
-      //     obsUrl=value.mediaUrl;
-      //     break;
-      //       case 3:
-      //         mediaUrl = value.mediaUrl;
-      //         break;
-      //       case 4:
-      //         mediaUrl = value.mediaUrl;
-      //         break;
-      //       case 5:
-      //         mediaUrl = value.mediaUrl;
-      //         break;
-      //       case 6:
-      //         mediaUrl = value.mediaUrl;
-      //         break;
-      //         case 7:
-      //             mediaUrl = value.mediaUrl;
-      //             break;
-      //       case 9:
-      //         mediaUrl = value.mediaUrl;
-      //         break;
-      //       default:
-      //         break;
-      //     }
-      //   });
-      //   console.log(obsUrl, mediaUrl);
-      //   if (!obsUrl) return;
-      wx.downloadFile({
-        // url: obsUrl,
-        url: "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/animal.png",
-        success: (res) => {
-          console.log(res);
-          let imgUrl = res.tempFilePath;
-          //   let type;
-          //   if (
-          //     mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "jpg" ||
-          //     mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "png"
-          //   ) {
-          //     type = "png";
-          //   }else {
-          //       type = mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1)
-          //   }
-          this.setData({
+        let obsUrlList = [],mediaUrlList = []
+        mediaList.mediaList.forEach((value, index) => {
+          switch (value.mediaType) {
+        case 1:
+            obsUrlList.push(value.mediaUrl);
+          break;
+            case 3:
+                mediaUrlList.push(value.mediaUrl);
+              break;
+            case 4:
+                mediaUrlList.push(value.mediaUrl);
+
+              break;
+            case 5:
+                mediaUrlList.push(value.mediaUrl);
+
+              break;
+            case 6:
+                mediaUrlList.push(value.mediaUrl);
+
+              break;
+              case 7:
+                mediaUrlList.push(value.mediaUrl);
+
+                  break;
+            case 9:
+                mediaUrlList.push(value.mediaUrl);
+
+              break;
+            default:
+              break;
+          }
+        });
+        console.log(obsUrlList, mediaUrlList);
+        // if (!obsUrlList) return;
+        this.setData({
             theme: wx.getSystemInfoSync().theme || "light",
-            imgUrl,
             // mediaUrl: "https:" + mediaUrl,
             // type,
           });
-          console.log(this.data.type);
-          this.onReady2();
-          if (wx.onThemeChange) {
-            wx.onThemeChange(({ theme }) => {
-              this.setData({ theme });
-            });
-          }
-        },
-      });
+        this.mediaUrlList = mediaUrlList
+        obsUrlList.forEach(obsUrl=>{
+            wx.downloadFile({
+                url: "https:"+obsUrl,
+                // url: "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/animal.png",
+                success: (res) => {
+                  console.log(res);
+                  let imgUrl = res.tempFilePath;
+                    // if (
+                    //   mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "jpg" ||
+                    //   mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "png"
+                    // ) {
+                    //   type = "png";
+                    // }else {
+                    //     type = mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1)
+                    // }
+
+                  this.imgUrl = imgUrl
+                  this.addMarker();
+                  if (wx.onThemeChange) {
+                    wx.onThemeChange(({ theme }) => {
+                      this.setData({ theme });
+                    });
+                  }
+                },
+              });
+        })
+  
     },
   },
   methods: {
@@ -131,12 +137,11 @@ Component({
       this.renderer.state.setCullFace(this.THREE.CullFaceNone);
     },
     addMarker() {
-      if (this.markerId) return;
-      console.log(this.data.imgUrl);
       const fs = wx.getFileSystemManager();
+      i++
       // 此处如果为jpeg,则后缀名也需要改成对应后缀
       // const filePath = `${wx.env.USER_DATA_PATH}/marker-ar.map`
-      const filePath = `${wx.env.USER_DATA_PATH}/marker-ar.jpeg`;
+      const filePath = `${wx.env.USER_DATA_PATH}/marker-ar${i}.jpeg`;
       //   const download = (callback) =>
       //     wx.downloadFile({
       //       // 此处设置为识别的3d对象的map地址
@@ -157,7 +162,7 @@ Component({
       const download = (callback) => {
         fs.saveFile({
           filePath,
-          tempFilePath: this.data.imgUrl,
+          tempFilePath: this.imgUrl,
           success: callback,
           fail: (res) => {
             console.error(res);
