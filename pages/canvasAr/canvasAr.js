@@ -3,20 +3,21 @@ import { throttle } from "../../utils/decorator";
 const t = throttle(500);
 import getBehavior from "../../pages/canvasAr/behavior";
 import yuvBehavior from "../../pages/canvasAr/yuvBehavior";
+const { API } = require("../../utils/request");
 // import getWebgl from "../../pages/canvasAr/webgl";
-
 
 const NEAR = 0.001;
 const FAR = 1000;
 // const jpeg = require("jpeg-js");
 
 Component({
-  behaviors: [getBehavior(),yuvBehavior],
+  behaviors: [getBehavior(), yuvBehavior],
   data: {
     isShowScan: false,
     theme: "light",
     imgUrl: "",
-    percentLine: 10,
+    percentLine: 50,
+    projectCode: "",
   },
   lifetimes: {
     /**
@@ -28,41 +29,76 @@ Component({
         wx.offThemeChange();
       }
     },
-    ready() {
-        wx.downloadFile({
-            // url: "https:" + this.properties.borchureDetail.bookCover,
-            url:"https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/obs.jpg",
-            success: (res) => {
-              console.log(res);
-              let imgUrl = res.tempFilePath;
-            //   wx.setStorageSync("imgUrl", imgUrl);
-            //   this.projectCode = JSON.parse(this.options.param).projectCode;
-            //    imgUrl = wx.getStorageSync("imgUrl");
-        
-              console.log(imgUrl);
-              console.log("页面准备完全");
-        
-              this.setData({
-                theme: wx.getSystemInfoSync().theme || "light",
-                imgUrl,
-              });
-        
-              if (wx.onThemeChange) {
-                wx.onThemeChange(({ theme }) => {
-                  this.setData({ theme });
-                });
-              }
-            },
+    async ready() {
+        let projectCode = wx.getStorageSync("projectCode");
+        let data = { projectCode };
+        let mediaList = await API.selMediaApps(data);
+      //   console.log(mediaList, "mediaList");
+      //   let obsUrl, mediaUrl;
+      //     obsUrl = await API.selBasePicList(data);
+      // obsUrl = wx.getStorageSync("imgUrl");
+      //   mediaList.mediaList.forEach((value, index) => {
+      //     switch (value.mediaType) {
+      //   case 1:
+      //     obsUrl=value.mediaUrl;
+      //     break;
+      //       case 3:
+      //         mediaUrl = value.mediaUrl;
+      //         break;
+      //       case 4:
+      //         mediaUrl = value.mediaUrl;
+      //         break;
+      //       case 5:
+      //         mediaUrl = value.mediaUrl;
+      //         break;
+      //       case 6:
+      //         mediaUrl = value.mediaUrl;
+      //         break;
+      //         case 7:
+      //             mediaUrl = value.mediaUrl;
+      //             break;
+      //       case 9:
+      //         mediaUrl = value.mediaUrl;
+      //         break;
+      //       default:
+      //         break;
+      //     }
+      //   });
+      //   console.log(obsUrl, mediaUrl);
+      //   if (!obsUrl) return;
+      wx.downloadFile({
+        // url: obsUrl,
+        url: "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/animal.png",
+        success: (res) => {
+          console.log(res);
+          let imgUrl = res.tempFilePath;
+          //   let type;
+          //   if (
+          //     mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "jpg" ||
+          //     mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "png"
+          //   ) {
+          //     type = "png";
+          //   }else {
+          //       type = mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1)
+          //   }
+          this.setData({
+            theme: wx.getSystemInfoSync().theme || "light",
+            imgUrl,
+            // mediaUrl: "https:" + mediaUrl,
+            // type,
           });
-    
+          console.log(this.data.type);
+          this.onReady2();
+          if (wx.onThemeChange) {
+            wx.onThemeChange(({ theme }) => {
+              this.setData({ theme });
+            });
+          }
+        },
+      });
     },
   },
   methods: {
-    back() {
-      wx.navigateBack({
-        delta: 1,
-      });
-    },
     init() {
       this.initGL();
     },
@@ -71,7 +107,7 @@ Component({
       this.renderGL(frame);
       const camera = frame.camera;
 
-      // 相机
+    //   相机
       if (camera) {
         this.camera.matrixAutoUpdate = false;
         this.camera.matrixWorldInverse.fromArray(camera.viewMatrix);
@@ -83,13 +119,13 @@ Component({
         //   this.camera.projectionMatrix
         // );
         this.camera.projectionMatrixInverse
-          .copy(this.camera.projectionMatrix)
+          .copy(this.camera.projectionMatrix,true)
           .invert();
+          this.camera.applyMatrix4(viewMatrix)
       }
 
       // 更新动画
       this.updateAnimation();
-
       this.renderer.autoClearColor = false;
       this.renderer.render(this.scene, this.camera);
       this.renderer.state.setCullFace(this.THREE.CullFaceNone);
@@ -133,8 +169,6 @@ Component({
         this.markerId = this.session.addMarker(filePath);
         this.setData({
           filePathNow: filePath,
-          isShowScan: true,
-
         });
       };
 

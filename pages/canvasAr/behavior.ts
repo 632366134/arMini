@@ -1,24 +1,21 @@
 import * as THREE from "three-platformize";
+import { WechatPlatform } from "three-platformize/src/WechatPlatform";
 import { GLTFLoader } from "three-platformize/examples/jsm/loaders/GLTFLoader";
 import { OBJLoader } from "three-platformize/examples/jsm/loaders/OBJLoader";
-import { STLLoader } from "three-platformize/examples/jsm/loaders/STLLoader";
 import { MTLLoader } from "three-platformize/examples/jsm/loaders/MTLLoader";
+import { FBXLoader } from "three-platformize/examples/jsm/loaders/FBXLoader";
+import { STLLoader } from "three-platformize/examples/jsm/loaders/STLLoader";
 
-import { WechatPlatform } from "three-platformize/src/WechatPlatform";
 const { API } = require("../../utils/request");
 import cloneGltf from "../../loaders/gltf-clone";
 const publicFn = require("../../utils/public");
 const w = 300;
 let h = 200,
   box,
-  ctx1,
-  videotexture,
-  videoImageContext,
-  videoTexture;
+  ctx1;
+
 const info = wx.getSystemInfoSync();
 let DEBUG_SIZE = false; // 目前支持不完善
-const mediaUrl = "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/";
-
 export default function getBehavior() {
   return Behavior({
     data: {
@@ -32,40 +29,23 @@ export default function getBehavior() {
       left: "50%",
       type: "obj",
       h: 0,
+      mediaUrl: "",
     },
     methods: {
-      onReady() {
-        console.log("ready");
+      onReady2() {
         wx.showLoading({
           title: "加载中",
         });
-        if (this.data.type === "mp4") {
-          wx.downloadFile({
-            url:
-              "https://view.2amok.com/20220823/2643babed380fe8da238288e3370d32e.mp4",
-            success: (e) => {
-              this.setData({ src: e.tempFilePath });
-            },
-            fail(e) {
-              console.log("download fail", e);
-            },
-            complete() {
-              wx.hideLoading();
-            },
-          });
-        }
-
         wx.createSelectorQuery()
           .select("#webgl")
           .node()
           .exec((res) => {
-            console.log(res);
             this.canvas = res[0].node;
             publicFn.LoadingOff();
             const info = wx.getSystemInfoSync();
             const pixelRatio = info.pixelRatio;
             const calcSize = (width, height) => {
-              console.log(`canvas size: width = ${width} , height = ${height}`);
+              //   console.log(`canvas size: width = ${width} , height = ${height}`);
               this.canvas.width = (width * pixelRatio) / 2;
               this.canvas.height = (height * pixelRatio) / 2;
               this.setData({
@@ -74,11 +54,42 @@ export default function getBehavior() {
               });
             };
             calcSize(info.windowWidth, info.windowHeight);
-            this.initVK();
+            if (this.data.type === "mp4") {
+              let downloadTask = wx.downloadFile({
+                url: this.data.mediaUrl,
+                //   url:"https://view.2amok.com/20220823/2643babed380fe8da238288e3370d32e.mp4",
+                success: (e) => {
+                  this.setData({ src: e.tempFilePath });
+                },
+                fail(e) {
+                  console.log("download fail", e);
+                },
+                complete() {
+                  downloadTask.offHeadersReceived;
+                  wx.hideLoading();
+                },
+              });
+              downloadTask.onProgressUpdate((res) => {
+                console.log("aaaa");
+                console.log("下载进度", res.progress);
+                console.log("已经下载的数据长度", res.totalBytesWritten);
+                console.log(
+                  "预期需要下载的数据总长度",
+                  res.totalBytesExpectedToWrite
+                );
+              });
+            } else {
+              this.initVK();
+            }
           });
       },
+      back() {
+        wx.navigateBack({
+          delta: 2,
+        });
+      },
       loadedmetadata(e) {
-        console.log("loadedmetadata");
+        // console.log("loadedmetadata");
         h = (w / e.detail.width) * e.detail.height;
         this.setData(
           {
@@ -100,6 +111,7 @@ export default function getBehavior() {
             wx.createSelectorQuery()
               .selectAll("#cvs1")
               .node((res) => {
+                this.initVK();
                 console.log("select canvas", res);
                 ctx1 = res[0].node.getContext("2d");
                 res[0].node.width = w * dpr;
@@ -167,7 +179,6 @@ export default function getBehavior() {
         if (this.init) this.init();
 
         console.log("this.gl", this.gl);
-
         const isSupportV2 = wx.isVKSupport("v2");
         const session = (this.session = wx.createVKSession({
           track: {
@@ -176,11 +187,12 @@ export default function getBehavior() {
             },
             marker: true,
           },
-          version: isSupportV2 ? "v2" : "v1",
+            version: isSupportV2 ? "v2" : "v1",
+        //   version: "v1",
           gl: this.gl,
         }));
 
-        session.start((err) => {
+        session.start(async(err) => {
           if (err) return console.error("VK error: ", err);
 
           console.log("@@@@@@@@ VKSession.version", session.version);
@@ -206,6 +218,8 @@ export default function getBehavior() {
               info.pixelRatio
             );
           });
+         await this.loading()
+
           this.clock = new THREE.Clock();
 
           const createPlane = (size) => {
@@ -227,26 +241,28 @@ export default function getBehavior() {
             object.matrix.fromArray(m);
           };
           session.on("addAnchors", (anchors) => {
+            console.log('加载模型1')
             anchors.forEach((anchor) => {
               const size = anchor.size;
               let object;
               if (size && DEBUG_SIZE) {
                 object = createPlane(size);
               } else {
-                if (!this.model) {
-                  console.warn("this.model 还没加载完成 ！！！！！");
-                  return;
-                }
+                // if (!this.model) {
+                //   console.warn("this.model 还没加载完成 ！！！！！");
+                //   return;
+                // }
 
                 object = new THREE.Object3D();
                 let model;
-                if (this.data.type === "obj") {
+                if (
+                  this.data.type === "obj" ||
+                  this.data.type === "fbx" ||
+                  this.data.type === "stl"
+                ) {
                   model = this.model;
-                } else {
-                  model = this.getRobot();
-                  model.rotateX(-Math.PI / 2);
-                }
-                if (this.data.type === "mp4") {
+                  object.add(model);
+                } else if (this.data.type === "mp4") {
                   if (this.data.left !== "50%") this.setData({ left: "50%" });
                   this.video.play();
                   setInterval(() => {
@@ -258,15 +274,29 @@ export default function getBehavior() {
                       h * info.pixelRatio
                     );
                   }, 1000 / 24);
+                  return;
+                } else if (
+                  this.data.type === "glb" ||
+                  this.data.type === "png"
+                ) {
+                  model = this.getRobot();
+                  model.rotateX(-Math.PI / 2);
+                  object.add(model);
+                } else {
                 }
-
-                object.add(model);
               }
 
               object._id = anchor.id;
               object._size = size;
               updateMatrix(object, anchor.transform);
-              this.planeBox.add(object);
+              if (this.data.type === "png") {
+                this.planeBox.add(this.cube);
+                this.planeBox.add(object);
+              } else {
+                this.planeBox.add(object);
+              }
+              console.log('加载模型2')
+              //   this.planeBox.add(this.cube);加载png贴图
             });
           });
           session.on("updateAnchors", (anchors) => {
@@ -288,7 +318,11 @@ export default function getBehavior() {
                   this.planeBox.remove(object);
                   object = createPlane(size);
                   this.planeBox.add(object);
-                  this.planeBox.add(box);
+                  if (this.data.type === "png") {
+                    this.planeBox.remove(this.cube);
+                    object = createPlane(size);
+                    this.planeBox.add(this.cube);
+                  }
                 }
 
                 object._id = anchor.id;
@@ -309,6 +343,9 @@ export default function getBehavior() {
               this.video.pause();
               this.setData({ left: "200%" });
             }
+            if (this.data.type === "png") {
+              this.planeBox.remove(this.cube);
+            }
           });
 
           // 平面集合
@@ -317,19 +354,20 @@ export default function getBehavior() {
           planeBox.scale.set(0.1, 0.1, 0.1);
           this.scene.add(planeBox);
           // 逐帧渲染
-          const onFrame = (timestamp) => {
-            // let start = Date.now()
-            const frame = session.getVKFrame(canvas.width, canvas.height);
-            if (frame) {
-              this.render(frame);
-            }
-            session.requestAnimationFrame(onFrame);
-          };
-          session.requestAnimationFrame(onFrame);
-          //   });
+              const onFrame = (timestamp) => {
+                // let start = Date.now()
+                const frame = session.getVKFrame(canvas.width, canvas.height);
+                if (frame) {
+                  this.render(frame);
+                }
+                session.requestAnimationFrame(onFrame);
+              };
+              this.setData({ isShowScan: true });
+              session.requestAnimationFrame(onFrame);
+
         });
       },
-      async initTHREE() {
+      initTHREE() {
         const platform = new WechatPlatform(this.canvas);
         this.platform = platform;
         platform.enableDeviceOrientation("game");
@@ -357,8 +395,8 @@ export default function getBehavior() {
           canvas: this.canvas,
         }));
         // renderer.gammaOutput = true;
+        renderer.outputEncoding = THREE.LinearEncoding;
         renderer.gammaFactor = 2.2;
-        await this.loading(THREE);
       },
       updateAnimation() {
         const dt = this.clock.getDelta();
@@ -366,24 +404,32 @@ export default function getBehavior() {
       },
       copyRobot() {
         const THREE = this.THREE;
-        const { scene, animations } = cloneGltf(this.model, THREE);
-        // scene.scale.set(0.3, 0.3, 0.3);
+        if (this.data.type === "glb" || this.data.type === "png") {
+          const { scene, animations } = cloneGltf(this.model, THREE);
+          scene.scale.set(0.03, 0.03, 0.03);
 
-        // 动画混合器
-        const mixer = new THREE.AnimationMixer(scene);
-        for (let i = 0; i < animations.length; i++) {
-          const clip = animations[i];
-          if (clip.name === "Dance") {
-            const action = mixer.clipAction(clip);
-            action.play();
+          // 动画混合器
+          const mixer = new THREE.AnimationMixer(scene);
+          for (let i = 0; i < animations.length; i++) {
+            const clip = animations[i];
+            if (clip.name === "Dance") {
+              const action = mixer.clipAction(clip);
+              action.play();
+            }
           }
+
+          this.mixers = this.mixers || [];
+          this.mixers.push(mixer);
+
+          scene._mixer = mixer;
+          return scene;
+        } else {
+          const mixer = new THREE.AnimationMixer(this.scene);
+
+          const action = mixer.clipAction(this.model.animations[0]);
+          action.play();
+          return this.scene;
         }
-
-        this.mixers = this.mixers || [];
-        this.mixers.push(mixer);
-
-        scene._mixer = mixer;
-        return scene;
       },
       getRobot() {
         const THREE = this.THREE;
@@ -411,70 +457,160 @@ export default function getBehavior() {
 
         return model;
       },
-      loading(THREE) {
-        return new Promise((resolve, reject) => {
-          let loader;
-          if (this.data.type == "obj") {
-            new MTLLoader().load(
-              "https://techbrood.com/threejs/examples/models/obj/male02/male-02-1noCulling.JPG",
-              (materials) => {
-                console.log("materials");
-                materials.preload();
-                new OBJLoader()
-                  .setMaterials(materials)
-                  .load(
-                    "https://techbrood.com/threejs/examples/models/obj/male02/male02.obj",
-                    (gltf) => {
-                      console.log(gltf, "model");
-                      console.log("obj");
-                      this.model = gltf;
-                      this.model.scale.set(0.05, 0.05, 0.05);
-                      this.model.rotateX(-Math.PI / 2);
-                      resolve(gltf);
-                    }
-                  );
+      loading() {
+        return new Promise(async (resolve, reject) => {
+          if (this.data.type === "mp4") resolve("mp4");
+
+          const onProgress = (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+          };
+          const onErr = (error) => {
+            console.log("An error happened", error);
+          };
+          const ojbFun = async () => {
+         const mtlLoader = new MTLLoader();
+            const objLoader = new OBJLoader();
+            const materials = (await mtlLoader.loadAsync(
+              "https://techbrood.com/threejs/examples/models/obj/male02/male02.mtl"
+            )) as MTLLoader.MaterialCreator;
+            materials.preload();
+            const object = (await objLoader
+              .setMaterials(materials)
+              .loadAsync(
+                "https://techbrood.com/threejs/examples/models/obj/male02/male02.obj"
+              )) as THREE.Group;
+            object.position.y = -95;
+            console.log(object)
+            this.model = object;
+            this.model.scale.set(0.05, 0.05, 0.05);
+            this.model.rotateX(-Math.PI / 4);
+                    resolve(object);
+          };
+          const glbFun = async () => {
+            await new GLTFLoader().load(
+              //   "https://dldir1.qq.com/weixin/miniprogram/RobotExpressive_aa2603d917384b68bb4a086f32dabe83.glb",
+              // https://techbrood.com/threejs/examples/models/gltf/SimpleSkinning.gltf
+              this.data.mediaUrl,
+              async (gltf) => {
+                this.model = {
+                  scene: gltf.scene,
+                  animations: gltf.animations,
+                };
+                console.log(gltf, "gltfgltfgltf");
+
+                resolve(gltf);
+              },
+              onProgress,
+              onErr
+            );
+          };
+          const stlFun = () => {
+            new STLLoader().load(
+              this.data.mediaUrl,
+              (stl) => {
+                console.log(stl);
+                const material = new THREE.MeshPhongMaterial({
+                  color: 0xff5533,
+                  specular: 0x111111,
+                  shininess: 200,
+                });
+                const mesh = new THREE.Mesh(stl, material);
+
+                mesh.position.set(0, -0.25, 0.6);
+                mesh.rotation.set(0, -Math.PI / 2, 0);
+                mesh.scale.set(5, 5, 5);
+
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                stl.center();
+                this.model = mesh;
+                // this.scene.add(mesh)
+                resolve(mesh);
+              },
+              onProgress,
+              onErr
+            );
+          };
+          const fbxFun = async () => {
+            const loader = new FBXLoader();
+            const object = await loader.load(
+              // "https://techbrood.com/threejs/examples/models/fbx/Samba%20Dancing.fbx",
+              this.data.mediaUrl,
+              // "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/undefined/286688538297585664/android/Wutai.fbx",
+              (gltf) => {
+                console.log(gltf);
+                this.model = gltf;
+                this.model.scale.set(0.05, 0.05, 0.05);
+                this.model.rotateX(-Math.PI / 2);
+                const mixer = new THREE.AnimationMixer(this.model);
+                this.mixers = this.mixers || [];
+                this.mixers.push(mixer);
+                const action = mixer.clipAction(this.model.animations[0]);
+                action.play();
+                this.model.traverse(function (child) {
+                  // @ts-ignore
+                  if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                  }
+                });
+                resolve(gltf);
+              },
+              onProgress,
+              onErr
+            );
+          };
+          const pngFun = async () => {
+            await new GLTFLoader().load(
+              "https://dldir1.qq.com/weixin/miniprogram/RobotExpressive_aa2603d917384b68bb4a086f32dabe83.glb",
+              // https://techbrood.com/threejs/examples/models/gltf/SimpleSkinning.gltf
+              //   this.data.mediaUrl,
+              async (gltf) => {
+                this.model = {
+                  scene: gltf.scene,
+                  animations: gltf.animations,
+                };
+                var geometry = new THREE.PlaneGeometry(20, 20);
+                const loader = new THREE.TextureLoader();
+                const texture = await loader.loadAsync(
+                  //   "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/animal.png"
+                  this.data.mediaUrl
+                );
+                texture.minFilter = THREE.LinearFilter;
+                const material = new THREE.MeshBasicMaterial({
+                  map: texture,
+                  transparent: true,
+                  side: THREE.DoubleSide,
+                });
+                var cube = (this.cube = new THREE.Mesh(geometry, material));
+                cube.traverse(function (child) {
+                  if (child instanceof THREE.Mesh) {
+                    //将贴图赋于材质
+                    child.material.map = texture;
+                    //重点，没有该句会导致PNG无法正确显示透明效果
+                    child.material.transparent = true;
+                  }
+                });
+                console.log(texture, cube);
+                cube.rotation.set(-Math.PI / 2, 0, 0);
+                cube.position.set(0, 5, 0);
+
+                cube.scale.set(0.5, 0.5, 0.5);
+                resolve(cube);
               }
             );
-          } else if (this.data.type === "glb") {
-            loader = new GLTFLoader();
+          };
+          if (this.data.type === "fbx") {
+            fbxFun();
+          } else if (this.data.type === "obj") {
+            ojbFun();
           } else if (this.data.type === "stl") {
-            loader = new STLLoader();
+            stlFun();
+          } else if (this.data.type === "glb") {
+            glbFun();
+          } else if (this.data.type === "png") {
+            pngFun();
           }
-          // https://dldir1.qq.com/weixin/miniprogram/RobotExpressive_aa2603d917384b68bb4a086f32dabe83.glb
-          // https://techbrood.com/threejs/examples/models/obj/male02/male02.obj
-          console.log("123", "21343124");
-          //   loader.load(
-          //     "https://techbrood.com/threejs/examples/models/obj/male02/male02.obj",
-          //     (gltf) => {
-          //       console.log(gltf,'model');
-          //       if (this.data.type === "stl") {
-          //         console.log('stl')
-
-          //         const material = new THREE.MeshLambertMaterial({
-          //           color: 0x7777ff,
-          //         });
-          //         this.mesh = new THREE.Mesh(gltf, material);
-          //         this.mesh.rotation.x = -0.5 * Math.PI;
-          //         this.mesh.scale.set(0.6, 0.6, 0.6);
-          //         this.scene.add(this.mesh);
-          //       } else {
-          //         console.log('glb')
-          //         this.model = {
-          //           scene: gltf.scene,
-          //           animations: gltf.animations,
-          //         };
-          //       }
-          //       resolve(gltf);
-          //     },
-          //     (xhr) => {
-          //       console.log("gltfloadingnoww");
-          //       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-          //     },
-          //     (err) => {
-          //       console.log(err);
-          //       reject(err)
-          //     }
-          //   );
         });
       },
     },

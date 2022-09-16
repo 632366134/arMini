@@ -43,21 +43,24 @@ Component({
     },
     confirmAr() {
       publicFn.Loading();
+      let url = `https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/${this.properties.borchureDetail.bookCoverObsPath}${this.properties.borchureDetail.bookCoverObsName}`
       this.handleCamera()
         .then((res) => {
-          wx.downloadFile({
+        //   wx.downloadFile({
             // url: "https:" + this.properties.borchureDetail.bookCover,
-            url:"https://wallpaper-static.cheetahfun.com/wallpaper/sites/hits/pic2.png",
-            success: (res) => {
-              console.log(res);
-              let imgUrl = res.tempFilePath;
-              wx.setStorageSync("imgUrl", imgUrl);
-              wx.setStorageSync("customerCode",this.properties.borchureDetail.customerCode);
+            // url:"https://wallpaper-static.cheetahfun.com/wallpaper/sites/hits/pic2.png",
+            // url:url,
+            // success: (res) => {
+            //   console.log(res);
+            //   let imgUrl = res.tempFilePath;
+              wx.setStorageSync("imgUrl", url);
+            console.log(this.properties.borchureDetail.projectCode)
+              wx.setStorageSync("projectCode",this.properties.borchureDetail.projectCode);
               goTo("canvasAr", {
                 projectCode: this.properties.borchureDetail.projectCode,
               });
-            },
-          });
+            // },
+        //   });
         })
         .catch((err) => {
           reject(err);

@@ -1,4 +1,4 @@
-const baseUrl = "https://wxminiapp.arsnowslide.com/";
+const baseUrl = "http://124.70.203.250:8081/";
 function request(method, url, data) {
   return new Promise((resolve, reject) => {
     let header = {
@@ -23,12 +23,14 @@ function request(method, url, data) {
     });
   });
 }
-const code = wx.getStorageSync("customerCode");
+const code = wx.getStorageSync("userCode");
 const API = {
   selProjects: (data) =>
-    request("POST", "resource/selProjects", data),
+    request("POST", "brounche/resource/selAllProjectsOnWx", data),
   selMediaApps: (data) =>
-    request("POST", "resource/selMediaApps", data)
+    request("POST", "brounche/resource/selMediaApps", data),
+    selBasePicList: (data) =>
+    request("POST", "brounche/resource/selBasePicList", data)
 
 };
 module.exports = {

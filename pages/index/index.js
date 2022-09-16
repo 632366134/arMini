@@ -27,9 +27,13 @@ Page({
       list,
       compList,
       collect,
-      collectUrl: collect?.bookCover || "/images/index/add.png",
+      collectUrl:
+        collect?.bookCover == true
+          ? "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com" + collect.bookCoverObsPath + collect.bookCoverObsName
+          : "/images/index/add.png",
       isCollect: collect ? true : false,
     });
+    console.log(compList, "compList",collect);
   },
   goHistroy() {
     publicFn.Loading();
@@ -46,12 +50,12 @@ Page({
       isMask: false,
     });
   },
-  goSearch(){
+  goSearch() {
     publicFn.Loading();
     goTo("compSearch");
   },
-  goService(){
+  goService() {
     publicFn.Loading();
     goTo("mycomp");
-  }
+  },
 });

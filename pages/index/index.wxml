@@ -2,19 +2,19 @@
 <view class="container  {{isMask === true ? 'mask-blur':''}}">
     <view class="header">
         <image src="/images/index/service.png" class="service" bindtap="goService"></image>
-        <view class="searchInput" >
+        <view class="searchInput">
             <view class="searchDeafult" bindtap="goSearch">
-                <image class="image" src="/images/index/search.png" ></image>
+                <image class="image" src="/images/index/search.png"></image>
                 <input class="input" disabled type="text" placeholder="搜索" />
             </view>
             <image class="image" src="/images/index/box2.png"></image>
         </view>
-        <image  bindtap="goHistroy" src="/images/index/history.png" class="history"></image>
+        <image bindtap="goHistroy" src="/images/index/history.png" class="history"></image>
     </view>
     <view class="welcome">Welcome to ARworld ! </view>
     <scroll-view enhanced="true" bounces="true" enable-flex="{{true}}" class="scroll-view" scroll-x="{{true}}">
         <view data-item="{{item}}" bindtap="gopriview" class="scroll-item" wx:for="{{list}}" wx:key="id">
-            <image src="{{item.bookCover}}" class="scrollImage"></image>
+            <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{item.bookCoverObsPath +item.bookCoverObsName}}" class="scrollImage"></image>
             <text class="text">{{item.projectName}}</text>
         </view>
     </scroll-view>
@@ -41,12 +41,12 @@
         </view>
         <view class="compListMain">
             <view class="mainLeft" bindtap="gopriview" data-item="{{compList[0]}}">
-                <image src="{{compList[0].bookCover}}"></image>
+                <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{compList[0].bookCoverObsPath + compList[0].bookCoverObsName}}"></image>
                 <text>{{compList[0].projectName}}</text>
             </view>
             <view class="mainRight">
                 <view wx:for="{{[1,2]}}" wx:key="id" class="mainRight2" data-item="{{compList[item]}}" bindtap="gopriview">
-                    <image src="{{compList[item].bookCover}}"></image>
+                    <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{compList[item].bookCoverObsPath + compList[item].bookCoverObsName}}"></image>
                     <text>{{compList[item].projectName}}</text>
                 </view>
             </view>
@@ -54,4 +54,4 @@
         </view>
     </view>
 </view>
-<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask"  isShow="{{isMask}}"></confirm-mask>
+<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask" isShow="{{isMask}}"></confirm-mask>

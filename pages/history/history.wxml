@@ -5,7 +5,7 @@
             <view class="swiper-item-view" animation="{{currentBannerIndex == index ? animationSelected : animationNoSelected}}">
                 <text class="addtime">{{item.addTime}}</text>
                 <view class="swiper-item" bindtap="gopriview" data-item="{{item}}">
-                    <image src="{{item.bookCover}}" class="scrollImage"></image>
+                    <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{item.bookCoverObsPath + item.bookCoverObsName}}" class="scrollImage"></image>
                     <text>{{item.projectIntroduce}}</text>
                 </view>
             </view>
