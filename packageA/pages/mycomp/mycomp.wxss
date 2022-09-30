@@ -1,0 +1,36 @@
+/* pages/mycomp/mycomp.wxss */
+.container-x {
+  padding-top: 40rpx;
+  padding-bottom: 28rpx;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+}
+.container-x .main {
+  padding: 400rpx 0 400rpx 0;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.container {
+  width: 100%;
+  height: 100vh;
+}
+.container .main {
+  padding: 400rpx 0 400rpx 0;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.webgl {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 98;
+}

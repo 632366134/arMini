@@ -1,0 +1,8 @@
+<view class="collect_list">
+    <view class=" collect_box {{listIndex===item.id ? 'url collect_box2' : ''}}" data-item="{{item}}" wx:for="{{list}}" wx:key="id" bindtap="select_box">
+        <view class="border">
+            <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{item.bookCoverObsPath + item.bookCoverObsName}}"></image>
+            <view class="desc">{{item.projectName}}</view>
+        </view>
+    </view>
+</view>

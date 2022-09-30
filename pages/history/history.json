@@ -1,0 +1,7 @@
+{
+    "usingComponents": {
+        "navigate-back":"/componments/navigateBack/navigateBack",
+        "confirm-mask": "/componments/confirm-mask/confirm-mask"
+
+    }
+}

@@ -1,0 +1,5 @@
+<view  class='{{isIPhoneX ? "container-x ":"container"}}'>
+    <navigate-back url="collectSearch"></navigate-back>
+    <collect-list url="url" class="collectList" bindmyevent="select" list="{{list}}"></collect-list>
+    <collect-btn bindmytap="goCollect"></collect-btn>
+</view>

@@ -1,0 +1,15 @@
+<view  class="{{isIPhoneX ? 'container-x' :'container'}} {{isMask === true ? 'mask-blur':''}}">
+    <navigate-back title3="{{title}}" url="index"></navigate-back>
+    <swiper current="{{currentBannerIndex}}" bindchange="handleChangeBanner" next-margin="60rpx" previous-margin="60rpx" class="swiper">
+            <swiper-item wx:for="{{list}}" wx:for-index="i" wx:key="i">
+            <view class="swiper-item-view" animation="{{currentBannerIndex == index ? animationSelected : animationNoSelected}}">
+                <text class="addtime">{{item.addTime}}</text>
+                <view class="swiper-item" bindtap="gopriview" data-item="{{item}}">
+                    <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{item.bookCoverObsPath + item.bookCoverObsName}}" class="scrollImage"></image>
+                    <text>{{item.projectIntroduce}}</text>
+                </view>
+            </view>
+            </swiper-item>
+    </swiper>
+</view>
+<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask" isShow="{{isMask}}"></confirm-mask>

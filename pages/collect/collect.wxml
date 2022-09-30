@@ -1,0 +1,11 @@
+<!--pages/collect/collect.wxml-->
+<view class="{{isIPhoneX ? 'container-x' :'container'}}">
+
+<navigate-back url="index"></navigate-back>
+    <view bindtap="goCollectSearch" class="msg_box">
+        <view class="msg">找不到你想要的？前往搜索</view>
+        <image src="/images/collect/back.png"></image>
+    </view>
+    <collect-list url="url" list="{{compList}}" bindmyevent="select"></collect-list>
+    <collect-btn bindmytap="goCollect"></collect-btn>
+</view>

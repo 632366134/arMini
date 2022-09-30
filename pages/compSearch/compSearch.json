@@ -1,0 +1,6 @@
+{
+    "usingComponents": {
+        "navigate-back":"/componments/navigateBack/navigateBack",
+        "search-row-history":"/componments/searchRowHistroy/searchRowHistroy"
+    }
+}

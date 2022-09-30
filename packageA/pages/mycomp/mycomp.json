@@ -1,0 +1,6 @@
+{
+    "usingComponents": {
+        "navigate-back" : "/componments/navigateBack/navigateBack"
+    },
+    "disableScroll": true
+}

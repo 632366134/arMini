@@ -1,0 +1,57 @@
+<!--index.wxml-->
+<view class="{{isIPhoneX ? 'container-x' :'container'}} {{isMask === true ? 'mask-blur':''}}" >
+    <view class="header">
+        <image src="/images/index/service.png" class="service" bindtap="goService"></image>
+        <view class="searchInput">
+            <view class="searchDeafult" bindtap="goSearch">
+                <image class="image" src="/images/index/search.png"></image>
+                <input class="input" disabled type="text" placeholder="搜索" />
+            </view>
+            <image class="image" src="/images/index/box2.png"></image>
+        </view>
+        <image bindtap="goHistroy" src="/images/index/history.png" class="history"></image>
+    </view>
+    <view class="welcome">Welcome to ARworld ! </view>
+    <scroll-view enhanced="true" bounces="true" enable-flex="{{true}}" class="scroll-view" scroll-x="{{true}}">
+        <view data-item="{{item}}" bindtap="gopriview" class="scroll-item" wx:for="{{list}}" wx:key="id">
+            <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{item.bookCoverObsPath +item.bookCoverObsName}}" class="scrollImage"></image>
+            <text class="text">{{item.projectName}}</text>
+        </view>
+    </scroll-view>
+    <view class="collect" bindtap="goColllect" wx:if="{{!isCollect}}">
+        <image class="image" src="/images/index/logobg.png"></image>
+        <view class="addCollect">
+            <image class="imagebox" src="{{collectUrl}}"></image>
+            <text>{{collect.projectName}}</text>
+        </view>
+    </view>
+    <view class="collect" bindtap="gopriview" wx:else data-item="{{collect}}">
+        <image class="image" src="/images/index/logobg.png"></image>
+        <view class="addCollect">
+            <image class="collectImage" src="{{collectUrl}}"></image>
+            <text class="text">{{collect.projectName}}</text>
+        </view>
+        <view capture-catch:touchstart="goColllect" class="resetImg">
+            <image class="image" src="/images/index/reset.png"></image>
+        </view>
+    </view>
+    <view class="compList">
+        <view class="compListTop">
+            企业榜单
+        </view>
+        <view class="compListMain">
+            <view class="mainLeft" bindtap="gopriview" data-item="{{compList[0]}}">
+                <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{compList[0].bookCoverObsPath + compList[0].bookCoverObsName}}"></image>
+                <text>{{compList[0].projectName}}</text>
+            </view>
+            <view class="mainRight">
+                <view wx:for="{{[1,2]}}" wx:key="id" class="mainRight2" data-item="{{compList[item]}}" bindtap="gopriview">
+                    <image src="https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/{{compList[item].bookCoverObsPath + compList[item].bookCoverObsName}}"></image>
+                    <text>{{compList[item].projectName}}</text>
+                </view>
+            </view>
+
+        </view>
+    </view>
+</view>
+<confirm-mask borchureDetail="{{borchureDetail}}" bindchangeMask="changeMask" isShow="{{isMask}}"></confirm-mask>

@@ -1,0 +1,1 @@
+<view class="collectBtn" bindtap="mytap">设为默认</view>

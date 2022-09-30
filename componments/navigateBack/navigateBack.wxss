@@ -1,0 +1,19 @@
+/* componments/navigateBack/navigateBack.wxss */
+.navigateback {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 80rpx;
+  left: 0;
+  z-index: 99999;
+}
+.back {
+  position: absolute;
+  top: 80rpx;
+  width: 24rpx;
+  height: 42rpx;
+  left: 20rpx;
+  z-index: 99999;
+}
