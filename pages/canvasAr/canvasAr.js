@@ -3,6 +3,8 @@ import { throttle } from "../../utils/decorator";
 const t = throttle(500);
 import getBehavior from "../../pages/canvasAr/behavior";
 import yuvBehavior from "../../pages/canvasAr/yuvBehavior";
+let obsList = [],
+  mediaUrlList = [];
 const { API } = require("../../utils/request");
 // import getWebgl from "../../pages/canvasAr/webgl";
 const app = getApp();
@@ -20,6 +22,8 @@ Component({
     imgUrl: "",
     percentLine: 50,
     projectCode: "",
+    markerId: null,
+    filePathNow: "",
   },
   lifetimes: {
     /**
@@ -32,67 +36,74 @@ Component({
       }
     },
     async ready() {
+      (obsList = []), (mediaUrlList = []);
       let projectCode = wx.getStorageSync("projectCode");
       let data = { projectCode };
       let mediaList = await API.selMediaApps(data);
-      let obsUrl, mediaUrl;
       mediaList.mediaList.forEach((value, index) => {
         switch (value.mediaType) {
           case 1:
-            obsUrl = value.mediaUrl;
+            obsList.push(value.mediaUrl);
             break;
           case 3:
-            mediaUrl = value.mediaUrl;
+            mediaUrlList.push(value.mediaUrl);
             break;
           case 4:
-            mediaUrl = value.mediaUrl;
+            mediaUrlList.push(value.mediaUrl);
             break;
           case 5:
-            mediaUrl = value.mediaUrl;
+            mediaUrlList.push(value.mediaUrl);
             break;
           case 6:
-            mediaUrl = value.mediaUrl;
+            mediaUrlList.push(value.mediaUrl);
             break;
           case 7:
-            mediaUrl = value.mediaUrl;
+            mediaUrlList.push(value.mediaUrl);
             break;
           case 9:
-            mediaUrl = value.mediaUrl;
+            mediaUrlList.push(value.mediaUrl);
             break;
           default:
             break;
         }
       });
-      if (!obsUrl) return;
-      wx.downloadFile({
-        url: "https:" + obsUrl,
-        // url: "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/animal.png",
-        success: (res) => {
-          let imgUrl = res.tempFilePath;
-          let type;
-          if (
-            mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "jpg" ||
-            mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1) === "png"
-          ) {
-            type = "png";
-          } else {
-            type = mediaUrl.slice(mediaUrl.lastIndexOf(".") + 1);
-          }
-          this.setData({
-            theme: wx.getSystemInfoSync().theme || "light",
-            imgUrl,
-            mediaUrl: "https:" + mediaUrl,
-            type,
-          });
-          console.log(imgUrl,this.data.type, this.data.mediaUrl);
-          this.onReady2();
-          if (wx.onThemeChange) {
-            wx.onThemeChange(({ theme }) => {
-              this.setData({ theme });
+      for (let  [index,obsUrl] of obsList.entries()) {
+        wx.downloadFile({
+          url: "https:" + obsUrl,
+          // url: "https://ar-test-0824.obs.cn-east-3.myhuaweicloud.com/animal.png",
+          success: (res) => {
+            let imgUrl = res.tempFilePath;
+            let type;
+            if (
+              mediaUrlList[index].slice(
+                mediaUrlList[index].lastIndexOf(".") + 1
+              ) === "jpg" ||
+              mediaUrlList[index].slice(
+                mediaUrlList[index].lastIndexOf(".") + 1
+              ) === "png"
+            ) {
+              type = "png";
+            } else {
+              type = mediaUrlList[index].slice(
+                mediaUrlList[index].lastIndexOf(".") + 1
+              );
+            }
+            this.setData({
+              theme: wx.getSystemInfoSync().theme || "light",
+              imgUrl,
+              mediaUrl: "https:" + mediaUrlList[index],
+              type,
             });
-          }
-        },
-      });
+            console.log(imgUrl, this.data.type, this.data.mediaUrl);
+            this.onReady2();
+          },
+        });
+      }
+      if (wx.onThemeChange) {
+        wx.onThemeChange(({ theme }) => {
+          this.setData({ theme });
+        });
+      }
     },
   },
   methods: {
@@ -127,11 +138,13 @@ Component({
       this.renderer.state.setCullFace(this.THREE.CullFaceNone);
     },
     addMarker() {
-      if (this.markerId) return;
+      //   if (this.markerId) return;
       const fs = wx.getFileSystemManager();
       // 此处如果为jpeg,则后缀名也需要改成对应后缀
       // const filePath = `${wx.env.USER_DATA_PATH}/marker-ar.map`
-      const filePath = `${wx.env.USER_DATA_PATH}/marker-ar.jpeg`;
+      let i = 1;
+      i++;
+      const filePath = `${wx.env.USER_DATA_PATH}/marker-ar${i}.jpeg`;
       //   const download = (callback) =>
       //     wx.downloadFile({
       //       // 此处设置为识别的3d对象的map地址
@@ -162,8 +175,10 @@ Component({
       const add = () => {
         console.log("[addMarker] --> ", filePath);
         this.markerId = this.session.addMarker(filePath);
+        console.log(this.markerId, filePath, "addadd");
         this.setData({
           filePathNow: filePath,
+          markerId: this.markerId,
         });
       };
 

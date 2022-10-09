@@ -11,8 +11,7 @@ import cloneGltf from "../../loaders/gltf-clone";
 const publicFn = require("../../utils/public");
 const w = 300;
 let h = 200,
-  box,
-  ctx1;
+  box;
 
 const info = wx.getSystemInfoSync();
 let DEBUG_SIZE = false; // 目前支持不完善
@@ -32,7 +31,7 @@ export default function getBehavior() {
       mediaUrl: "",
     },
     methods: {
-      onReady2() {
+      onReady() {
         wx.showLoading({
           title: "加载中",
         });
@@ -54,36 +53,39 @@ export default function getBehavior() {
               });
             };
             calcSize(info.windowWidth, info.windowHeight);
-            console.log(this.data.type);
-            if (this.data.type === "mp4") {
-              console.log("mp4mp4", this.data.mediaUrl);
-              let downloadTask = wx.downloadFile({
-                url: this.data.mediaUrl,
-                //   url:"https://view.2amok.com/20220823/2643babed380fe8da238288e3370d32e.mp4",
-                success: (e) => {
-                  this.setData({ src: e.tempFilePath });
-                },
-                fail(e) {
-                  console.log("download fail", e);
-                },
-                complete() {
-                  downloadTask.offHeadersReceived;
-                  wx.hideLoading();
-                },
-              });
-              downloadTask.onProgressUpdate((res) => {
-                console.log("aaaa");
-                console.log("下载进度", res.progress);
-                console.log("已经下载的数据长度", res.totalBytesWritten);
-                console.log(
-                  "预期需要下载的数据总长度",
-                  res.totalBytesExpectedToWrite
-                );
-              });
-            } else {
-              this.initVK();
-            }
+            this.initTHREE();
+
           });
+      },
+      onReady2() {
+        if (this.data.type === "mp4") {
+          console.log("mp4mp4", this.data.mediaUrl);
+          let downloadTask = wx.downloadFile({
+            url: this.data.mediaUrl,
+            //   url:"https://view.2amok.com/20220823/2643babed380fe8da238288e3370d32e.mp4",
+            success: (e) => {
+              this.setData({ src: e.tempFilePath });
+            },
+            fail(e) {
+              console.log("download fail", e);
+            },
+            complete() {
+              downloadTask.offHeadersReceived;
+              wx.hideLoading();
+            },
+          });
+          downloadTask.onProgressUpdate((res) => {
+            console.log("aaaa");
+            console.log("下载进度", res.progress);
+            console.log("已经下载的数据长度", res.totalBytesWritten);
+            console.log(
+              "预期需要下载的数据总长度",
+              res.totalBytesExpectedToWrite
+            );
+          });
+        } else {
+          this.initVK();
+        }
       },
       back() {
         this.onUnload();
@@ -116,7 +118,7 @@ export default function getBehavior() {
               .node((res) => {
                 this.initVK();
                 console.log("select canvas", res);
-                ctx1 = res[0].node.getContext("2d");
+                this.ctx1 = res[0].node.getContext("2d");
                 res[0].node.width = w * dpr;
                 res[0].node.height = h * dpr;
                 // setInterval(() => {
@@ -128,6 +130,10 @@ export default function getBehavior() {
           .exec();
       },
       onUnload() {
+        console.log("unload");
+        if (THREE.PLATFORM) {
+          THREE.PLATFORM.dispose();
+        }
         if (this._texture) {
           this._texture.dispose();
           this._texture = null;
@@ -139,9 +145,6 @@ export default function getBehavior() {
         if (this.scene) {
           this.scene.dispose();
           this.scene = null;
-        }
-        if (THREE.PLATFORM) {
-          THREE.PLATFORM.dispose();
         }
         if (this.camera) this.camera = null;
         if (this.model) this.model = null;
@@ -175,7 +178,6 @@ export default function getBehavior() {
 
       initVK() {
         // 初始化 threejs
-        this.initTHREE();
         const THREE = this.THREE;
         // 自定义初始化
 
@@ -194,12 +196,10 @@ export default function getBehavior() {
           //   version: "v1",
           gl: this.gl,
         }));
-
         session.start(async (err) => {
           if (err) return console.error("VK error: ", err);
-
+          this.addMarker();
           console.log("@@@@@@@@ VKSession.version", session.version);
-          await this.addMarker();
           const canvas = this.canvas;
 
           const calcSize = (width, height, pixelRatio) => {
@@ -221,6 +221,25 @@ export default function getBehavior() {
             );
           });
           await this.loading();
+          const getModelList = () => {
+            let markerId = this.data.markerId;
+            if (!this.modelList) {
+              this.modelList = [];
+            }
+            this.modelList.push({
+              markerId,
+              model: this.data.type === "mp4" ? this.video : this.model,
+              type: this.data.type,
+            });
+            console.log(this.modelList, "modelList");
+          };
+          if (this.data.type === "mp4") {
+            wx.nextTick(() => {
+              getModelList();
+            });
+          } else {
+            getModelList();
+          }
           this.clock = new THREE.Clock();
 
           const createPlane = (size) => {
@@ -245,6 +264,14 @@ export default function getBehavior() {
             console.log("加载模型1");
             anchors.forEach((anchor) => {
               const size = anchor.size;
+              const markerId = anchor.markerId;
+              console.log(this.modelList, markerId);
+              this.modelList.forEach((element, index) => {
+                if (element.markerId === markerId) {
+                  this.model = element.model;
+                  this.type2 = element.type;
+                }
+              });
               let object;
               if (size && DEBUG_SIZE) {
                 object = createPlane(size);
@@ -257,18 +284,19 @@ export default function getBehavior() {
                 object = new THREE.Object3D();
                 let model;
                 if (
-                  this.data.type === "obj" ||
-                  this.data.type === "fbx" ||
-                  this.data.type === "stl" ||
-                  this.data.type === "png"
+                  this.type2 === "obj" ||
+                  this.type2 === "fbx" ||
+                  this.type2 === "stl" ||
+                  this.type2 === "png"
                 ) {
                   model = this.model;
                   object.add(model);
-                } else if (this.data.type === "mp4") {
+                } else if (this.type2 === "mp4") {
                   if (this.data.left !== "50%") this.setData({ left: "50%" });
+                  this.video = this.model;
                   this.video.play();
                   setInterval(() => {
-                    ctx1.drawImage(
+                    this.ctx1.drawImage(
                       this.video,
                       0,
                       0,
@@ -277,7 +305,7 @@ export default function getBehavior() {
                     );
                   }, 1000 / 24);
                   return;
-                } else if (this.data.type === "glb") {
+                } else if (this.type2 === "glb") {
                   model = this.getRobot();
                   model.rotateX(-Math.PI / 2);
                   object.add(model);
@@ -333,7 +361,7 @@ export default function getBehavior() {
             this.planeBox.children.forEach((object) => {
               if (object._id && map[object._id]) this.planeBox.remove(object);
             });
-            if (this.data.type === "mp4") {
+            if (this.type2 === "mp4") {
               this.video.pause();
               this.setData({ left: "200%" });
             }
@@ -563,24 +591,24 @@ export default function getBehavior() {
             const texture = await loader.loadAsync(this.data.mediaUrl);
             const material = new THREE.MeshBasicMaterial({
               side: THREE.DoubleSide,
-              map: texture, 
-              transparent:true,
-              opacity:0.5
+              map: texture,
+              transparent: true,
+              opacity: 0.5,
             });
-            material.map=texture;
+            material.map = texture;
             texture.minFilter = THREE.NearestFilter;
             texture.flipY = false;
-            texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping
+            texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
 
             let model = (this.model = new THREE.Mesh(geometry, material));
-            model.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { 
-                    node.castShadow = true;
-                    node.material.map = texture;
-                    node.material.needsUpdate = true;
-                    node.material.emissiveMap = node.material.map;
-                    
-                    } 
-                    });
+            model.traverse(function (node) {
+              if (node instanceof THREE.Mesh) {
+                node.castShadow = true;
+                node.material.map = texture;
+                node.material.needsUpdate = true;
+                node.material.emissiveMap = node.material.map;
+              }
+            });
 
             model.rotation.set(-Math.PI / 2, 0, 0);
             model.position.set(0, 0, 0.6);
